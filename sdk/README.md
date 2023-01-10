@@ -8,32 +8,59 @@ An npm package to intract with smark contracts ccreated by Tevaera Labs in the e
 
 After installing the app, you can then import and use the SDK:
 
-   ```javascript
-   import { CitizenId, KarmaPoint } from '@tevaera-labs/tevaera-web3';
+### Create instance of the contract using web3 provider
 
-   // get the web3 provider
-   const provider = new zksync.Web3Provider(window.ethereum);
+```javascript
+import { CitizenId } from '@tevaera-labs/tevaera-web3'
 
-   //// get citizen id by wallet
-   // create the instance of citizen id contract
-   const citizenIdContract = new CitizenId(provider);
+// get the web3 provider
+const provider = new zksync.Web3Provider(window.ethereum)
 
-   // get token id (nft id) by wallet address
-   const tokenId = citizenIdContract.GetCitizenID('<wallet_address>');
+// create the instance of citizen id contract
+const citizenIdContract = new CitizenId({ web3Provider: provider })
+```
 
-   //// get karma point balance by wallet
-   // create the instance of karma point contract
-   const karmaPointContract = new KarmaPoint(provider);
+### Create instance of the contract using wallet private key
 
-   // get karma point balance by wallet address
-   const kpBalance = karmaPointContract.GetKpBalance('<wallet_address>');
-   // get karma point price by kp amount
-   const kpBalance = karmaPointContract.GetKpPrice('<no_of_kp>');
-   // buy karma point
-   const kpBalance = karmaPointContract.BuyKarmaPoints('<no_of_kp>');
-   // withdraw karma point
-   const kpBalance = karmaPointContract.WithdrawKarmaPoints('<no_of_kp>');
-   ```
+```javascript
+import { CitizenId } from '@tevaera-labs/tevaera-web3'
+import { types } from '@tevaera-labs/tevaera-web3'
+
+// create the instance of citizen id contract
+const citizenIdContract = new CitizenId({
+  network: types.Network.Goerli,
+  privateKey: '<wallet_private_key>',
+})
+```
+
+### Complete example
+
+```javascript
+import { CitizenId, KarmaPoint } from '@tevaera-labs/tevaera-web3'
+
+// get the web3 provider
+const provider = new zksync.Web3Provider(window.ethereum)
+
+//// get citizen id by wallet
+// create the instance of citizen id contract
+const citizenIdContract = new CitizenId({ web3Provider: provider })
+
+// get token id (nft id) by wallet address
+const tokenId = citizenIdContract.GetCitizenID('<wallet_address>')
+
+//// get karma point balance by wallet
+// create the instance of karma point contract
+const karmaPointContract = new KarmaPoint({ web3Provider: provider })
+
+// get karma point balance by wallet address
+const kpBalance = karmaPointContract.GetKpBalance('<wallet_address>')
+// get karma point price by kp amount
+const kpBalance = karmaPointContract.GetKpPrice('<no_of_kp>')
+// buy karma point
+const kpBalance = karmaPointContract.BuyKarmaPoints('<no_of_kp>')
+// withdraw karma point
+const kpBalance = karmaPointContract.WithdrawKarmaPoints('<no_of_kp>')
+```
 
 ## Using the Tevaera Web3 SDK
 
@@ -47,18 +74,21 @@ The Tevaera Web3 SDK currently supports four different namespaces, including:
 Below is the list of methods supported by all classes:
 
 - CitizenId
+
   - GetCitizenID
   - MintCitizenID
-  
+
 - Claim
+
   - Claim
-  
+
 - Guardians
+
   - GetGuardianByIndex
   - GetGuardianIndexByTokenId
   - GetGuardiansByWallet
   - MintGuardian
-  
+
 - KarmaPoint
   - BuyKarmaPoints
   - GetBoughtKarmaPoints
@@ -67,4 +97,3 @@ Below is the list of methods supported by all classes:
   - GetKpBuyingCap
   - GetKpPrice
   - WithdrawKarmaPoints
-  
