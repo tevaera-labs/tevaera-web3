@@ -6,7 +6,6 @@ import { CITIZEN_ID_CONTRACT_ADDRESS, GetZkSyncProvider } from "../utils";
 import { Network } from "../types";
 
 export class CitizenId {
-  readonly web3Provider: zksync.Web3Provider | ethers.providers.Web3Provider;
   readonly contract: zksync.Contract;
 
   constructor(options: {
