@@ -1,6 +1,6 @@
 # JavaScript SDK for tevaera-web3
 
-An npm package to intract with smark contracts ccreated by Tevaera Labs in the ethereum network. It can be used in browser applications.
+An npm package to intract with smart contracts created by Tevaera Labs on ethereum network. It can be used in browser applications.
 
 ## Getting started
 
