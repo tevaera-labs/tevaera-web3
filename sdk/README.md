@@ -4,14 +4,14 @@ An npm package to intract with smark contracts ccreated by Tevaera Labs in the e
 
 ## Getting started
 
-`npm install @tevaera-labs/tevaera-web3`
+`npm install @tevaeralabs/tevaera-web3`
 
 After installing the app, you can then import and use the SDK:
 
 ### Create instance of the contract using web3 provider
 
 ```javascript
-import { CitizenId } from '@tevaera-labs/tevaera-web3'
+import { CitizenId } from '@tevaeralabs/tevaera-web3'
 
 // get the web3 provider
 const provider = new zksync.Web3Provider(window.ethereum)
@@ -23,8 +23,8 @@ const citizenIdContract = new CitizenId({ web3Provider: provider })
 ### Create instance of the contract using wallet private key
 
 ```javascript
-import { CitizenId } from '@tevaera-labs/tevaera-web3'
-import { types } from '@tevaera-labs/tevaera-web3'
+import { CitizenId } from '@tevaeralabs/tevaera-web3'
+import { types } from '@tevaeralabs/tevaera-web3'
 
 // create the instance of citizen id contract
 const citizenIdContract = new CitizenId({
@@ -36,7 +36,7 @@ const citizenIdContract = new CitizenId({
 ### Complete example
 
 ```javascript
-import { CitizenId, KarmaPoint } from '@tevaera-labs/tevaera-web3'
+import { CitizenId, KarmaPoint } from '@tevaeralabs/tevaera-web3'
 
 // get the web3 provider
 const provider = new zksync.Web3Provider(window.ethereum)
@@ -78,18 +78,8 @@ Below is the list of methods supported by all classes:
   - GetCitizenID
   - MintCitizenID
 
-- Claim
-
-  - Claim
-
-- Guardians
-
-  - GetGuardianByIndex
-  - GetGuardianIndexByTokenId
-  - GetGuardiansByWallet
-  - MintGuardian
-
 - KarmaPoint
+
   - BuyKarmaPoints
   - GetBoughtKarmaPoints
   - GetKpBalance
@@ -97,3 +87,22 @@ Below is the list of methods supported by all classes:
   - GetKpBuyingCap
   - GetKpPrice
   - WithdrawKarmaPoints
+
+- Claim
+
+  - Claim
+
+- ReformistSphinx
+
+  - GetReformistSphinxByWallet
+  - MintReformistSphinx
+
+- MagicalPhoenix
+
+  - GetMagicalPhoenixByWallet
+  - MintMagicalPhoenix
+
+- NomadicYeti
+
+  - GetNomadicYetiByWallet
+  - MintNomadicYeti

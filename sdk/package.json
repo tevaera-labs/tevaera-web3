@@ -1,7 +1,7 @@
 {
-  "name": "@tevaera-labs/tevaera-web3",
-  "version": "0.0.5-development",
-  "description": "An npm package to intract with smark contracts ccreated by Tevaera Labs on the zkSync network(A L2 solution on ethereum network). It can be used in browser applications.",
+  "name": "@tevaeralabs/tevaera-web3",
+  "version": "0.0.2-development",
+  "description": "An npm package to interact with smart contracts ccreated by Tevaera Labs on the zkSync network(A L2 solution on ethereum network). It can be used in browser applications.",
   "exports": {
     ".": {
       "import": {
@@ -58,6 +58,6 @@
   "dependencies": {},
   "peerDependencies": {
     "ethers": "^5.7.2",
-    "zksync-web3": "^0.12.3"
+    "zksync-web3": "^0.13.4"
   }
 }

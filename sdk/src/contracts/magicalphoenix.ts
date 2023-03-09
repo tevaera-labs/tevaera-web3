@@ -2,10 +2,10 @@
 import * as zksync from "zksync-web3";
 import { ethers } from "ethers";
 
-import { CITIZEN_ID_CONTRACT_ADDRESS, GetZkSyncProvider } from "../utils";
+import { MAGICAL_PHOENIX_CONTRACT_ADDRESS, GetZkSyncProvider } from "../utils";
 import { Network } from "../types";
 
-export class CitizenId {
+export class MagicalPhoenix {
   readonly contract: zksync.Contract;
 
   constructor(options: {
@@ -17,8 +17,8 @@ export class CitizenId {
 
     if (web3Provider) {
       this.contract = new zksync.Contract(
-        CITIZEN_ID_CONTRACT_ADDRESS,
-        require("../abi/CitizenId.json").abi,
+        MAGICAL_PHOENIX_CONTRACT_ADDRESS,
+        require("../abi/MagicalPhoenix.json").abi,
         web3Provider.getSigner()
       );
     } else {
@@ -29,24 +29,30 @@ export class CitizenId {
       const wallet = new zksync.Wallet(privateKey, zkSyncProvider);
 
       this.contract = new zksync.Contract(
-        CITIZEN_ID_CONTRACT_ADDRESS,
-        require("../abi/CitizenId.json").abi,
+        MAGICAL_PHOENIX_CONTRACT_ADDRESS,
+        require("../abi/MagicalPhoenix.json").abi,
         wallet._signerL2()
       );
     }
   }
 
-  public async MintCitizenID(): Promise<unknown> {
-    const price = await this.contract.tokenPrice;
-    const mintTx = await this.contract.mintCitizenId({ value: price });
+  async GetMagicalPhoenixByWallet(
+    address: string
+  ): Promise<number | undefined> {
+    const noOfMagicalPhoenix = await this.contract.balanceOf(address);
+    if (noOfMagicalPhoenix > 0) {
+      const tokenId = await this.contract.tokenOfOwnerByIndex(address, 0);
+      return tokenId;
+    }
+
+    return undefined;
+  }
+
+  async MintMagicalPhoenix(): Promise<unknown> {
+    const price = await this.contract.PHOENIX_PRICE;
+    const mintTx = await this.contract.mint({ value: price });
     await mintTx.wait();
 
     return mintTx;
-  }
-
-  async GetCitizenID(address: string): Promise<number> {
-    const tokenId = await this.contract.tokenOfOwnerByIndex(address, 0);
-
-    return tokenId;
   }
 }

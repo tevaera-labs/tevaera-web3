@@ -4,17 +4,17 @@
       "inputs": [
         {
           "internalType": "address payable",
-          "name": "safeAddress",
+          "name": "_safeAddress",
           "type": "address"
         },
         {
           "internalType": "address payable",
-          "name": "charityAddress",
+          "name": "_charityAddress",
           "type": "address"
         },
         {
           "internalType": "contract CitizenID",
-          "name": "citizenIdContract",
+          "name": "_citizenIdContract",
           "type": "address"
         }
       ],
@@ -143,12 +143,12 @@
     },
     {
       "inputs": [],
-      "name": "_charityAddress",
+      "name": "MAX_SPHINXES",
       "outputs": [
         {
-          "internalType": "address payable",
+          "internalType": "uint256",
           "name": "",
-          "type": "address"
+          "type": "uint256"
         }
       ],
       "stateMutability": "view",
@@ -156,159 +156,15 @@
     },
     {
       "inputs": [],
-      "name": "_charityBps",
+      "name": "SPHINX_PRICE",
       "outputs": [
         {
-          "internalType": "uint16",
+          "internalType": "uint256",
           "name": "",
-          "type": "uint16"
+          "type": "uint256"
         }
       ],
       "stateMutability": "view",
-      "type": "function"
-    },
-    {
-      "inputs": [
-        {
-          "internalType": "uint256",
-          "name": "",
-          "type": "uint256"
-        }
-      ],
-      "name": "_guardianCollection",
-      "outputs": [
-        {
-          "internalType": "bool",
-          "name": "exists",
-          "type": "bool"
-        },
-        {
-          "internalType": "uint8",
-          "name": "index",
-          "type": "uint8"
-        },
-        {
-          "internalType": "uint32",
-          "name": "unlockLevel",
-          "type": "uint32"
-        },
-        {
-          "internalType": "uint256",
-          "name": "cap",
-          "type": "uint256"
-        },
-        {
-          "internalType": "uint256",
-          "name": "minted",
-          "type": "uint256"
-        },
-        {
-          "internalType": "uint256",
-          "name": "price",
-          "type": "uint256"
-        },
-        {
-          "internalType": "string",
-          "name": "name",
-          "type": "string"
-        },
-        {
-          "internalType": "string",
-          "name": "baseUri",
-          "type": "string"
-        }
-      ],
-      "stateMutability": "view",
-      "type": "function"
-    },
-    {
-      "inputs": [
-        {
-          "internalType": "address",
-          "name": "",
-          "type": "address"
-        }
-      ],
-      "name": "_playerToLevel",
-      "outputs": [
-        {
-          "internalType": "uint16",
-          "name": "",
-          "type": "uint16"
-        }
-      ],
-      "stateMutability": "view",
-      "type": "function"
-    },
-    {
-      "inputs": [],
-      "name": "_safeAddress",
-      "outputs": [
-        {
-          "internalType": "address payable",
-          "name": "",
-          "type": "address"
-        }
-      ],
-      "stateMutability": "view",
-      "type": "function"
-    },
-    {
-      "inputs": [
-        {
-          "internalType": "uint256",
-          "name": "",
-          "type": "uint256"
-        }
-      ],
-      "name": "_tokenIdToGuardianIndex",
-      "outputs": [
-        {
-          "internalType": "uint8",
-          "name": "",
-          "type": "uint8"
-        }
-      ],
-      "stateMutability": "view",
-      "type": "function"
-    },
-    {
-      "inputs": [
-        {
-          "internalType": "uint16",
-          "name": "unlockLevel",
-          "type": "uint16"
-        },
-        {
-          "internalType": "uint256",
-          "name": "cap",
-          "type": "uint256"
-        },
-        {
-          "internalType": "uint256",
-          "name": "price",
-          "type": "uint256"
-        },
-        {
-          "internalType": "string",
-          "name": "name",
-          "type": "string"
-        },
-        {
-          "internalType": "string",
-          "name": "baseUri",
-          "type": "string"
-        }
-      ],
-      "name": "addGuardianCollection",
-      "outputs": [
-        {
-          "internalType": "bool",
-          "name": "",
-          "type": "bool"
-        }
-      ],
-      "stateMutability": "nonpayable",
       "type": "function"
     },
     {
@@ -349,6 +205,32 @@
       "type": "function"
     },
     {
+      "inputs": [],
+      "name": "charityAddress",
+      "outputs": [
+        {
+          "internalType": "address payable",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "charityBps",
+      "outputs": [
+        {
+          "internalType": "uint16",
+          "name": "",
+          "type": "uint16"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
       "inputs": [
         {
           "internalType": "uint256",
@@ -362,6 +244,25 @@
           "internalType": "address",
           "name": "",
           "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "name": "ids",
+      "outputs": [
+        {
+          "internalType": "uint16",
+          "name": "",
+          "type": "uint16"
         }
       ],
       "stateMutability": "view",
@@ -392,13 +293,7 @@
       "type": "function"
     },
     {
-      "inputs": [
-        {
-          "internalType": "uint8",
-          "name": "guardianIndex",
-          "type": "uint8"
-        }
-      ],
+      "inputs": [],
       "name": "mint",
       "outputs": [],
       "stateMutability": "payable",
@@ -506,6 +401,19 @@
       "type": "function"
     },
     {
+      "inputs": [],
+      "name": "safeAddress",
+      "outputs": [
+        {
+          "internalType": "address payable",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
       "inputs": [
         {
           "internalType": "address",
@@ -596,6 +504,19 @@
     {
       "inputs": [],
       "name": "symbol",
+      "outputs": [
+        {
+          "internalType": "string",
+          "name": "",
+          "type": "string"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "tokenBaseUri",
       "outputs": [
         {
           "internalType": "string",
@@ -728,12 +649,12 @@
       "inputs": [
         {
           "internalType": "address payable",
-          "name": "charity",
+          "name": "_charity",
           "type": "address"
         },
         {
           "internalType": "uint16",
-          "name": "charityBps",
+          "name": "_charityBps",
           "type": "uint16"
         }
       ],
@@ -745,67 +666,8 @@
     {
       "inputs": [
         {
-          "internalType": "uint8",
-          "name": "index",
-          "type": "uint8"
-        },
-        {
-          "internalType": "uint16",
-          "name": "unlockLevel",
-          "type": "uint16"
-        },
-        {
-          "internalType": "uint256",
-          "name": "price",
-          "type": "uint256"
-        },
-        {
-          "internalType": "string",
-          "name": "baseUri",
-          "type": "string"
-        }
-      ],
-      "name": "updateGuardianCollection",
-      "outputs": [
-        {
-          "internalType": "bool",
-          "name": "",
-          "type": "bool"
-        }
-      ],
-      "stateMutability": "nonpayable",
-      "type": "function"
-    },
-    {
-      "inputs": [
-        {
-          "components": [
-            {
-              "internalType": "address",
-              "name": "player",
-              "type": "address"
-            },
-            {
-              "internalType": "uint16",
-              "name": "level",
-              "type": "uint16"
-            }
-          ],
-          "internalType": "struct Guardians.PlayerLevel[]",
-          "name": "playerLevels",
-          "type": "tuple[]"
-        }
-      ],
-      "name": "updatePlayerLevels",
-      "outputs": [],
-      "stateMutability": "nonpayable",
-      "type": "function"
-    },
-    {
-      "inputs": [
-        {
           "internalType": "address payable",
-          "name": "safe",
+          "name": "_safeAddress",
           "type": "address"
         }
       ],
