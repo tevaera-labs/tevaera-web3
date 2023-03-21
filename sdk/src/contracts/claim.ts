@@ -36,8 +36,10 @@ export class Claim {
     }
   }
 
-  async Claim(): Promise<unknown> {
-    const claimTx = await this.contract.claim();
+  async Claim(citizenIdPrice: number): Promise<unknown> {
+    const claimTx = await this.contract.claim({
+      value: citizenIdPrice,
+    });
     await claimTx.wait();
 
     return claimTx;

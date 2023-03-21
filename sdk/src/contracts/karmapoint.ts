@@ -43,7 +43,7 @@ export class KarmaPoint {
   }
 
   async GetKpBuyCap(): Promise<number> {
-    const capping = await this.contract._buyCap();
+    const capping = await this.contract.buyCap();
     return capping;
   }
 
@@ -55,15 +55,15 @@ export class KarmaPoint {
   }
 
   async GetKpBuyingCap(): Promise<number> {
-    return this.contract._buyCap();
+    return this.contract.buyCap();
   }
 
   async GetBoughtKarmaPoints(wallet: string): Promise<number> {
-    return this.contract._boughtKP(wallet);
+    return this.contract.boughtKP(wallet);
   }
 
   async BuyKarmaPoints(kpAmount: number): Promise<unknown> {
-    const tx = await this.contract.buyViaETH(kpAmount, {
+    const tx = await this.contract.buy(kpAmount, {
       value: ethers.utils.parseUnits(await this.GetKpPrice(kpAmount), 18),
     });
     await tx.wait();

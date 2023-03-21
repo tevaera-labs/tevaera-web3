@@ -37,8 +37,10 @@ export class CitizenId {
   }
 
   public async MintCitizenID(): Promise<unknown> {
-    const price = await this.contract.tokenPrice;
-    const mintTx = await this.contract.mintCitizenId({ value: price });
+    const price = await this.contract.tokenPrice();
+    const mintTx = await this.contract.mintCitizenId({
+      value: parseInt(price),
+    });
     await mintTx.wait();
 
     return mintTx;
@@ -48,5 +50,11 @@ export class CitizenId {
     const tokenId = await this.contract.tokenOfOwnerByIndex(address, 0);
 
     return tokenId;
+  }
+
+  async GetCitizenIDPrice(): Promise<number> {
+    const price = await this.contract.tokenPrice();
+
+    return price;
   }
 }

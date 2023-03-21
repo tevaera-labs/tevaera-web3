@@ -3,12 +3,12 @@
     {
       "inputs": [
         {
-          "internalType": "contract CitizenID",
+          "internalType": "contract CitizenIDV1",
           "name": "_citizenIdContract",
           "type": "address"
         },
         {
-          "internalType": "contract KarmaPoint",
+          "internalType": "contract KarmaPointV1",
           "name": "_kpContract",
           "type": "address"
         }
@@ -104,24 +104,6 @@
     {
       "inputs": [],
       "name": "renounceOwnership",
-      "outputs": [],
-      "stateMutability": "nonpayable",
-      "type": "function"
-    },
-    {
-      "inputs": [
-        {
-          "internalType": "contract CitizenID",
-          "name": "_citizenIdContract",
-          "type": "address"
-        },
-        {
-          "internalType": "contract KarmaPoint",
-          "name": "_kpContract",
-          "type": "address"
-        }
-      ],
-      "name": "setContracts",
       "outputs": [],
       "stateMutability": "nonpayable",
       "type": "function"

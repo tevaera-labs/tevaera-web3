@@ -48,9 +48,8 @@ export class ReformistSphinx {
     return undefined;
   }
 
-  async MintReformistSphinx(guardianIndex: number): Promise<unknown> {
-    const price = await this.contract.PHOENIX_PRICE;
-    const mintTx = await this.contract.mint({ value: price });
+  async MintReformistSphinx(): Promise<unknown> {
+    const mintTx = await this.contract.mint();
     await mintTx.wait();
 
     return mintTx;

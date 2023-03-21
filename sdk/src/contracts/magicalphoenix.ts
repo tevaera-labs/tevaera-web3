@@ -49,8 +49,10 @@ export class MagicalPhoenix {
   }
 
   async MintMagicalPhoenix(): Promise<unknown> {
-    const price = await this.contract.PHOENIX_PRICE;
-    const mintTx = await this.contract.mint({ value: price });
+    const price = await this.contract.PHOENIX_PRICE();
+    const mintTx = await this.contract.mint({
+      value: parseInt(price),
+    });
     await mintTx.wait();
 
     return mintTx;
