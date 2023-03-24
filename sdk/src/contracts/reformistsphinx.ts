@@ -36,6 +36,12 @@ export class ReformistSphinx {
     }
   }
 
+  async GetMetadataUri(tokenId: number): Promise<number> {
+    const uri = await this.contract.tokenURI(tokenId);
+
+    return uri;
+  }
+
   async GetReformistSphinxByWallet(
     address: string
   ): Promise<number | undefined> {
@@ -46,6 +52,17 @@ export class ReformistSphinx {
     }
 
     return undefined;
+  }
+
+  async GetReformistSphinxesByWallet(address: string): Promise<number[]> {
+    const noOfReformistSphinx = await this.contract.balanceOf(address);
+    const tokenIds: number[] = [];
+    for (let index = 0; index < noOfReformistSphinx; index++) {
+      const tokenId = await this.contract.tokenOfOwnerByIndex(address, index);
+      tokenIds.push(tokenId);
+    }
+
+    return tokenIds;
   }
 
   async MintReformistSphinx(): Promise<unknown> {

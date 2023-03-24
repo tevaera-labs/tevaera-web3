@@ -39,7 +39,7 @@ export class CitizenId {
   public async MintCitizenID(): Promise<unknown> {
     const price = await this.contract.tokenPrice();
     const mintTx = await this.contract.mintCitizenId({
-      value: parseInt(price),
+      value: price,
     });
     await mintTx.wait();
 
@@ -56,5 +56,11 @@ export class CitizenId {
     const price = await this.contract.tokenPrice();
 
     return price;
+  }
+
+  async GetMetadataUri(citizenId: number): Promise<number> {
+    const uri = await this.contract.tokenURI(citizenId);
+
+    return uri;
   }
 }

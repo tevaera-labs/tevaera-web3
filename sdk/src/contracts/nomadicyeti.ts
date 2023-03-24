@@ -36,6 +36,12 @@ export class NomadicYeti {
     }
   }
 
+  async GetMetadataUri(tokenId: number): Promise<number> {
+    const uri = await this.contract.tokenURI(tokenId);
+
+    return uri;
+  }
+
   async GetNomadicYetiByWallet(address: string): Promise<number | undefined> {
     const noOfNomadicYeti = await this.contract.balanceOf(address);
     if (noOfNomadicYeti > 0) {
@@ -46,10 +52,21 @@ export class NomadicYeti {
     return undefined;
   }
 
+  async GetNomadicYetisByWallet(address: string): Promise<number[]> {
+    const noOfNomadicYeti = await this.contract.balanceOf(address);
+    const tokenIds: number[] = [];
+    for (let index = 0; index < noOfNomadicYeti; index++) {
+      const tokenId = await this.contract.tokenOfOwnerByIndex(address, index);
+      tokenIds.push(tokenId);
+    }
+
+    return tokenIds;
+  }
+
   async MintNomadicYeti(): Promise<unknown> {
     const price = await this.contract.YETI_PRICE();
     const mintTx = await this.contract.mint({
-      value: parseInt(price),
+      value: price,
     });
     await mintTx.wait();
 

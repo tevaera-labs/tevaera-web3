@@ -48,10 +48,27 @@ export class MagicalPhoenix {
     return undefined;
   }
 
+  async GetMagicalPhoenixesByWallet(address: string): Promise<number[]> {
+    const noOfMagicalPhoenix = await this.contract.balanceOf(address);
+    const tokenIds: number[] = [];
+    for (let index = 0; index < noOfMagicalPhoenix; index++) {
+      const tokenId = await this.contract.tokenOfOwnerByIndex(address, index);
+      tokenIds.push(tokenId);
+    }
+
+    return tokenIds;
+  }
+
+  async GetMetadataUri(tokenId: number): Promise<number> {
+    const uri = await this.contract.tokenURI(tokenId);
+
+    return uri;
+  }
+
   async MintMagicalPhoenix(): Promise<unknown> {
     const price = await this.contract.PHOENIX_PRICE();
     const mintTx = await this.contract.mint({
-      value: parseInt(price),
+      value: price,
     });
     await mintTx.wait();
 

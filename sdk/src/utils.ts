@@ -13,9 +13,9 @@ export const ZKSYNC_TST_CHAIN_ID = 280;
 export const CITIZEN_ID_CONTRACT_ADDRESS =
   "0xbc1080d0244D9f937ab7932E9ddf9099d0C0EE78";
 export const KARMA_POINT_CONTRACT_ADDRESS =
-  "0x75CBc93876Bae9D1A4675EBd3147ec3e721da585";
+  "0xfDFFC25d664cd83941504B7c8a1121E0178D9bcB";
 export const CLAIM_CONTRACT_ADDRESS =
-  "0xfF1c3D9BbC7203B4C72247a7d606F89404D8324a";
+  "0xE8d9D6dFEdeE00C967e020DB089340676a4D79e6";
 export const REFORMIST_SPHINX_CONTRACT_ADDRESS =
   "0xB8Ac06Cd6C874C52D8013FC175d83e9Ac9Aa1063";
 export const MAGICAL_PHOENIX_CONTRACT_ADDRESS =
@@ -23,12 +23,36 @@ export const MAGICAL_PHOENIX_CONTRACT_ADDRESS =
 export const NOMADIC_YETI_CONTRACT_ADDRESS =
   "0xEf83f6DA317b771eCb5ae9B4147A21A69b7D6b4E";
 
+export const GetZkSyncChainId = (network: Network) => {
+  switch (network) {
+    case Network.Goerli:
+      return ZKSYNC_TST_CHAIN_ID;
+    case Network.Mainnet:
+      throw ZKSYNC_PRD_CHAIN_ID;
+
+    default:
+      throw new Error("invalid network");
+  }
+};
+
 export const GetZkSyncProvider = (network: Network) => {
   switch (network) {
     case Network.Goerli:
       return new Provider(ZKSYNC_TST_RPC_URL);
     case Network.Mainnet:
       throw new Provider(ZKSYNC_PRD_RPC_URL);
+
+    default:
+      throw new Error("invalid network");
+  }
+};
+
+export const GetZkSyncRpcUrl = (network: Network) => {
+  switch (network) {
+    case Network.Goerli:
+      return ZKSYNC_TST_RPC_URL;
+    case Network.Mainnet:
+      throw ZKSYNC_PRD_RPC_URL;
 
     default:
       throw new Error("invalid network");
