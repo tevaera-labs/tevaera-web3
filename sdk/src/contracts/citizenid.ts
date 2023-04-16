@@ -58,9 +58,17 @@ export class CitizenId {
     return price;
   }
 
-  async GetMetadataUri(citizenId: number): Promise<number> {
+  async GetMetadataUri(citizenId: number): Promise<string> {
     const uri = await this.contract.tokenURI(citizenId);
 
     return uri;
+  }
+
+  async UpdateRep(tokens: number[], reps: number[]): Promise<string> {
+    const batchTx = await this.contract.updateRep(tokens, reps);
+
+    await batchTx.wait();
+
+    return batchTx;
   }
 }

@@ -36,7 +36,7 @@ export class ReformistSphinx {
     }
   }
 
-  async GetMetadataUri(tokenId: number): Promise<number> {
+  async GetMetadataUri(tokenId: number): Promise<string> {
     const uri = await this.contract.tokenURI(tokenId);
 
     return uri;

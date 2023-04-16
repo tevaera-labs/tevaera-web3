@@ -11,55 +11,55 @@ After installing the app, you can then import and use the SDK:
 ### Create instance of the contract using web3 provider
 
 ```javascript
-import { CitizenId } from '@tevaeralabs/tevaera-web3'
+import { CitizenId } from "@tevaeralabs/tevaera-web3";
 
 // get the web3 provider
-const provider = new zksync.Web3Provider(window.ethereum)
+const provider = new zksync.Web3Provider(window.ethereum);
 
 // create the instance of citizen id contract
-const citizenIdContract = new CitizenId({ web3Provider: provider })
+const citizenIdContract = new CitizenId({ web3Provider: provider });
 ```
 
 ### Create instance of the contract using wallet private key
 
 ```javascript
-import { CitizenId } from '@tevaeralabs/tevaera-web3'
-import { types } from '@tevaeralabs/tevaera-web3'
+import { CitizenId } from "@tevaeralabs/tevaera-web3";
+import { types } from "@tevaeralabs/tevaera-web3";
 
 // create the instance of citizen id contract
 const citizenIdContract = new CitizenId({
   network: types.Network.Goerli,
-  privateKey: '<wallet_private_key>',
-})
+  privateKey: "<wallet_private_key>",
+});
 ```
 
 ### Complete example
 
 ```javascript
-import { CitizenId, KarmaPoint } from '@tevaeralabs/tevaera-web3'
+import { CitizenId, KarmaPoint } from "@tevaeralabs/tevaera-web3";
 
 // get the web3 provider
-const provider = new zksync.Web3Provider(window.ethereum)
+const provider = new zksync.Web3Provider(window.ethereum);
 
 //// get citizen id by wallet
 // create the instance of citizen id contract
-const citizenIdContract = new CitizenId({ web3Provider: provider })
+const citizenIdContract = new CitizenId({ web3Provider: provider });
 
 // get token id (nft id) by wallet address
-const tokenId = citizenIdContract.GetCitizenID('<wallet_address>')
+const tokenId = citizenIdContract.GetCitizenID("<wallet_address>");
 
 //// get karma point balance by wallet
 // create the instance of karma point contract
-const karmaPointContract = new KarmaPoint({ web3Provider: provider })
+const karmaPointContract = new KarmaPoint({ web3Provider: provider });
 
 // get karma point balance by wallet address
-const kpBalance = karmaPointContract.GetKpBalance('<wallet_address>')
+const kpBalance = karmaPointContract.GetKpBalance("<wallet_address>");
 // get karma point price by kp amount
-const kpBalance = karmaPointContract.GetKpPrice('<no_of_kp>')
+const kpBalance = karmaPointContract.GetKpPrice("<no_of_kp>");
 // buy karma point
-const kpBalance = karmaPointContract.BuyKarmaPoints('<no_of_kp>')
+const kpBalance = karmaPointContract.BuyKarmaPoints("<no_of_kp>");
 // withdraw karma point
-const kpBalance = karmaPointContract.WithdrawKarmaPoints('<no_of_kp>')
+const kpBalance = karmaPointContract.WithdrawKarmaPoints("<no_of_kp>");
 ```
 
 ## Using the Tevaera Web3 SDK
@@ -96,13 +96,3 @@ Below is the list of methods supported by all classes:
 
   - GetReformistSphinxByWallet
   - MintReformistSphinx
-
-- MagicalPhoenix
-
-  - GetMagicalPhoenixByWallet
-  - MintMagicalPhoenix
-
-- NomadicYeti
-
-  - GetNomadicYetiByWallet
-  - MintNomadicYeti
