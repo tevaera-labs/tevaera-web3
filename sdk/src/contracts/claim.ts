@@ -2,7 +2,7 @@
 import * as zksync from "zksync-web3";
 import { ethers } from "ethers";
 
-import { CLAIM_CONTRACT_ADDRESS, GetZkSyncProvider } from "../utils";
+import { GetContractAddresses, GetZkSyncProvider } from "../utils";
 import { Network } from "../types";
 
 export class Claim {
@@ -10,26 +10,27 @@ export class Claim {
 
   constructor(options: {
     web3Provider?: zksync.Web3Provider | ethers.providers.Web3Provider;
-    network?: Network;
+    network: Network;
     privateKey?: string;
   }) {
     const { web3Provider, network, privateKey } = options;
+    if (!network) throw new Error("network is reuired.");
+    const { claimContractAddress } = GetContractAddresses(network);
 
     if (web3Provider) {
       this.contract = new zksync.Contract(
-        CLAIM_CONTRACT_ADDRESS,
+        claimContractAddress,
         require("../abi/Claim.json").abi,
         web3Provider.getSigner()
       );
     } else {
-      if (!network || !privateKey)
-        throw new Error("network and private key are reuired.");
+      if (!privateKey) throw new Error("private key is reuired.");
 
       const zkSyncProvider = GetZkSyncProvider(network);
       const wallet = new zksync.Wallet(privateKey, zkSyncProvider);
 
       this.contract = new zksync.Contract(
-        CLAIM_CONTRACT_ADDRESS,
+        claimContractAddress,
         require("../abi/Claim.json").abi,
         wallet._signerL2()
       );

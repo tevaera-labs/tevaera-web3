@@ -2,7 +2,7 @@
 import * as zksync from "zksync-web3";
 import { ethers } from "ethers";
 
-import { GetZkSyncProvider, KARMA_POINT_CONTRACT_ADDRESS } from "../utils";
+import { GetContractAddresses, GetZkSyncProvider } from "../utils";
 import { formatUnits } from "ethers/lib/utils";
 import { Network } from "../types";
 
@@ -11,26 +11,27 @@ export class KarmaPoint {
 
   constructor(options: {
     web3Provider?: zksync.Web3Provider | ethers.providers.Web3Provider;
-    network?: Network;
+    network: Network;
     privateKey?: string;
   }) {
     const { web3Provider, network, privateKey } = options;
+    if (!network) throw new Error("network is reuired.");
+    const { karmaPointContractAddress } = GetContractAddresses(network);
 
     if (web3Provider) {
       this.contract = new zksync.Contract(
-        KARMA_POINT_CONTRACT_ADDRESS,
+        karmaPointContractAddress,
         require("../abi/KarmaPoint.json").abi,
         web3Provider.getSigner()
       );
     } else {
-      if (!network || !privateKey)
-        throw new Error("network and private key are reuired.");
+      if (!privateKey) throw new Error("private key is reuired.");
 
       const zkSyncProvider = GetZkSyncProvider(network);
       const wallet = new zksync.Wallet(privateKey, zkSyncProvider);
 
       this.contract = new zksync.Contract(
-        KARMA_POINT_CONTRACT_ADDRESS,
+        karmaPointContractAddress,
         require("../abi/KarmaPoint.json").abi,
         wallet._signerL2()
       );
