@@ -39,7 +39,7 @@ export const GetZkSyncChainId = (network: Network) => {
     case Network.Goerli:
       return ZKSYNC_TST_CHAIN_ID;
     case Network.Mainnet:
-      throw ZKSYNC_PRD_CHAIN_ID;
+      return ZKSYNC_PRD_CHAIN_ID;
 
     default:
       throw new Error("invalid network");
@@ -51,7 +51,7 @@ export const GetZkSyncProvider = (network: Network) => {
     case Network.Goerli:
       return new Provider(ZKSYNC_TST_RPC_URL);
     case Network.Mainnet:
-      throw new Provider(ZKSYNC_PRD_RPC_URL);
+      return new Provider(ZKSYNC_PRD_RPC_URL);
 
     default:
       throw new Error("invalid network");
@@ -63,7 +63,7 @@ export const GetZkSyncRpcUrl = (network: Network) => {
     case Network.Goerli:
       return ZKSYNC_TST_RPC_URL;
     case Network.Mainnet:
-      throw ZKSYNC_PRD_RPC_URL;
+      return ZKSYNC_PRD_RPC_URL;
 
     default:
       throw new Error("invalid network");
