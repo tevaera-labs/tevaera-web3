@@ -5,7 +5,7 @@ import { ethers } from "ethers";
 import { GetContractAddresses, GetRpcProvider } from "../utils";
 import { Network } from "../types";
 
-export class ReformistSphinx {
+export class InfluentialWerewolf {
   readonly contract: ethers.Contract;
 
   constructor(options: {
@@ -15,14 +15,16 @@ export class ReformistSphinx {
   }) {
     const { web3Provider, network, privateKey } = options;
     if (!network) throw new Error("network is reuired.");
-    const { reformistSphinxContractAddress } = GetContractAddresses(network);
+    const { influentialWerewolfContractAddress } =
+      GetContractAddresses(network);
 
-    if (!reformistSphinxContractAddress) throw new Error("Contract not found!");
+    if (!influentialWerewolfContractAddress)
+      throw new Error("Contract not found!");
 
     if (web3Provider) {
       this.contract = new ethers.Contract(
-        reformistSphinxContractAddress,
-        require("../abi/ReformistSphinx.json").abi,
+        influentialWerewolfContractAddress,
+        require("../abi/InfluentialWerewolf.json").abi,
         web3Provider.getSigner()
       );
     } else {
@@ -32,8 +34,8 @@ export class ReformistSphinx {
       const wallet = new ethers.Wallet(privateKey, rpcProvider);
 
       this.contract = new ethers.Contract(
-        reformistSphinxContractAddress,
-        require("../abi/ReformistSphinx.json").abi,
+        influentialWerewolfContractAddress,
+        require("../abi/InfluentialWerewolf.json").abi,
         wallet
       );
     }
@@ -45,11 +47,11 @@ export class ReformistSphinx {
     return uri;
   }
 
-  async GetReformistSphinxByWallet(
+  async GetInfluentialWerewolfByWallet(
     address: string
   ): Promise<number | undefined> {
-    const noOfReformistSphinx = await this.contract.balanceOf(address);
-    if (noOfReformistSphinx > 0) {
+    const noOfInfluentialWerewolf = await this.contract.balanceOf(address);
+    if (noOfInfluentialWerewolf > 0) {
       const tokenId = await this.contract.tokenOfOwnerByIndex(address, 0);
       return tokenId;
     }
@@ -57,10 +59,10 @@ export class ReformistSphinx {
     return undefined;
   }
 
-  async GetReformistSphinxesByWallet(address: string): Promise<number[]> {
-    const noOfReformistSphinx = await this.contract.balanceOf(address);
+  async GetInfluentialWerewolfesByWallet(address: string): Promise<number[]> {
+    const noOfInfluentialWerewolf = await this.contract.balanceOf(address);
     const tokenIds: number[] = [];
-    for (let index = 0; index < noOfReformistSphinx; index++) {
+    for (let index = 0; index < noOfInfluentialWerewolf; index++) {
       const tokenId = await this.contract.tokenOfOwnerByIndex(address, index);
       tokenIds.push(tokenId);
     }
@@ -68,8 +70,17 @@ export class ReformistSphinx {
     return tokenIds;
   }
 
-  async MintReformistSphinx(): Promise<unknown> {
-    const mintTx = await this.contract.mint();
+  async GetInfluentialWerewolfPrice(): Promise<number> {
+    const price = await this.contract.tokenPrice();
+
+    return price;
+  }
+
+  async MintInfluentialWerewolf(): Promise<unknown> {
+    const price = await this.contract.tokenPrice();
+    const mintTx = await this.contract.mint({
+      value: price
+    });
     await mintTx.wait();
 
     return mintTx;

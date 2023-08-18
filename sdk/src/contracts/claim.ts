@@ -2,11 +2,11 @@
 import * as zksync from "zksync-web3";
 import { ethers } from "ethers";
 
-import { GetContractAddresses, GetZkSyncProvider } from "../utils";
+import { GetContractAddresses, GetRpcProvider } from "../utils";
 import { Network } from "../types";
 
 export class Claim {
-  readonly contract: zksync.Contract;
+  readonly contract: ethers.Contract;
 
   constructor(options: {
     web3Provider?: zksync.Web3Provider | ethers.providers.Web3Provider;
@@ -17,8 +17,10 @@ export class Claim {
     if (!network) throw new Error("network is reuired.");
     const { claimContractAddress } = GetContractAddresses(network);
 
+    if (!claimContractAddress) throw new Error("Contract not found!");
+
     if (web3Provider) {
-      this.contract = new zksync.Contract(
+      this.contract = new ethers.Contract(
         claimContractAddress,
         require("../abi/Claim.json").abi,
         web3Provider.getSigner()
@@ -26,20 +28,20 @@ export class Claim {
     } else {
       if (!privateKey) throw new Error("private key is reuired.");
 
-      const zkSyncProvider = GetZkSyncProvider(network);
-      const wallet = new zksync.Wallet(privateKey, zkSyncProvider);
+      const rpcProvider = GetRpcProvider(network);
+      const wallet = new ethers.Wallet(privateKey, rpcProvider);
 
-      this.contract = new zksync.Contract(
+      this.contract = new ethers.Contract(
         claimContractAddress,
         require("../abi/Claim.json").abi,
-        wallet._signerL2()
+        wallet
       );
     }
   }
 
   async Claim(citizenIdPrice: number): Promise<unknown> {
     const claimTx = await this.contract.claim({
-      value: citizenIdPrice,
+      value: citizenIdPrice
     });
     await claimTx.wait();
 

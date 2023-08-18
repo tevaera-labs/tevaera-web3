@@ -1,13 +1,13 @@
 /* import dependencies */
-import * as zksync from "zksync-web3";
 import { ethers } from "ethers";
+import * as zksync from "zksync-web3";
 
-import { GetContractAddresses, GetZkSyncProvider } from "../utils";
+import { GetContractAddresses, GetRpcProvider } from "../utils";
 import { formatUnits } from "ethers/lib/utils";
 import { Network } from "../types";
 
 export class KarmaPoint {
-  readonly contract: zksync.Contract;
+  readonly contract: ethers.Contract;
 
   constructor(options: {
     web3Provider?: zksync.Web3Provider | ethers.providers.Web3Provider;
@@ -18,8 +18,10 @@ export class KarmaPoint {
     if (!network) throw new Error("network is reuired.");
     const { karmaPointContractAddress } = GetContractAddresses(network);
 
+    if (!karmaPointContractAddress) throw new Error("Contract not found!");
+
     if (web3Provider) {
-      this.contract = new zksync.Contract(
+      this.contract = new ethers.Contract(
         karmaPointContractAddress,
         require("../abi/KarmaPoint.json").abi,
         web3Provider.getSigner()
@@ -27,13 +29,13 @@ export class KarmaPoint {
     } else {
       if (!privateKey) throw new Error("private key is reuired.");
 
-      const zkSyncProvider = GetZkSyncProvider(network);
-      const wallet = new zksync.Wallet(privateKey, zkSyncProvider);
+      const rpcProvider = GetRpcProvider(network);
+      const wallet = new ethers.Wallet(privateKey, rpcProvider);
 
-      this.contract = new zksync.Contract(
+      this.contract = new ethers.Contract(
         karmaPointContractAddress,
         require("../abi/KarmaPoint.json").abi,
-        wallet._signerL2()
+        wallet
       );
     }
   }
@@ -65,7 +67,7 @@ export class KarmaPoint {
 
   async BuyKarmaPoints(kpAmount: number): Promise<unknown> {
     const tx = await this.contract.buy(kpAmount, {
-      value: ethers.utils.parseUnits(await this.GetKpPrice(kpAmount), 18),
+      value: ethers.utils.parseUnits(await this.GetKpPrice(kpAmount), 18)
     });
     await tx.wait();
 

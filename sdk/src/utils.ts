@@ -1,69 +1,140 @@
-import { Provider } from "zksync-web3";
+import * as zksync from "zksync-web3";
+import { ethers } from "ethers";
 import { Network } from "./types";
 
-// zksync rpc urls
-export const ZKSYNC_PRD_RPC_URL = "https://mainnet.era.zksync.io";
-export const ZKSYNC_TST_RPC_URL = "https://zksync2-testnet.zksync.dev";
+// rpc urls
+export const ZKSYNC_ERA_RPC_URL = "https://mainnet.era.zksync.io";
+export const ZKSYNC_ERA_GOERLI_RPC_URL = "https://zksync2-testnet.zksync.dev";
 
-// zksync chain ids
-export const ZKSYNC_PRD_CHAIN_ID = 324;
-export const ZKSYNC_TST_CHAIN_ID = 280;
+export const ARBITRUM_ONE_RPC_URL = "https://arb1.arbitrum.io/rpc";
+export const ARBITRUM_GOERLI_RPC_URL = "https://goerli-rollup.arbitrum.io/rpc";
+
+export const LINEA_RPC_URL = "https://linea-mainnet.infura.io/v3";
+export const LINEA_GOERLI_RPC_URL = "https://rpc.goerli.linea.build";
 
 // tevaera contracts
 export const GetContractAddresses = (network: Network) => {
   switch (network) {
-    case Network.Goerli:
+    case Network.ZksyncEraGoerli:
       return {
         citizenIdContractAddress: "0x52f6C2822e68FC05E565AD13F596d8dBc40166f9",
         karmaPointContractAddress: "0xD9471ac50B1015275911C9fDfD2Ba734374415b1",
         claimContractAddress: "0x3F248D326d8eF82f88865afe2cbf5277a073a880",
         reformistSphinxContractAddress:
           "0x6fAa4B4b6b0745CFe7405eE04Ca8D28DA67779A7",
+        magicalPhoenixContractAddress:
+          "0x9bcb9074e760392907fcadDd18dE3bB48fEdFB5F",
+        nomadicYetiContractAddress:
+          "0x734D7483a98f405295842F7B6360424d28D73f4D",
+        influentialWerewolfContractAddress:
+          "0xAa9f35254255aE06384bC73D1b5DC50F993C2C47",
+        innovativeUnicornContractAddress:
+          "0x3A3A2f4a03ce48B31D3c76E46ce210005cE942BD",
+        simplifierKrakenContractAddress:
+          "0x31A8e9C2D851D2E7d0088B1a2Cc4F625BC938Cf4",
+        balancerDragonContractAddress:
+          "0x2c94b544BEe4994af23Fc5e9436C1195BFA8D2dF",
+        guardianBundlerContractAddress:
+          "0x6dC0590dF111B68c5273B3d1351d01936321dB93",
+        tevaPayMasterContractAddress:
+          "0x2F9b95557646146Ec7dBa6ff784ddC79244b14DC"
       };
-    case Network.Mainnet:
+    case Network.ArbitrumGoerli:
       return {
-        citizenIdContractAddress: "0xd29Aa7bdD3cbb32557973daD995A3219D307721f",
-        karmaPointContractAddress: "0x9Fc20170d613766831F164f1831F4607Ae54ff2D",
-        claimContractAddress: "0x1EB7bcab5EdF75b5E02c9A72D3287E322EbaEfdB",
-        reformistSphinxContractAddress:
-          "0x50B2b7092bCC15fbB8ac74fE9796Cf24602897Ad",
+        nomadicYetiContractAddress:
+          "0x1f2e4C36f4a494eddF797f8127a16B1Cac03c246",
+        influentialWerewolfContractAddress:
+          "0xE43EC1ce702cE29f17901a3444BbFeDB82a59Cde",
+        innovativeUnicornContractAddress:
+          "0xc78cB995aF1169Ba76185f37779aC455e76eCF30",
+        simplifierKrakenContractAddress:
+          "0xE120D9A60613DAFc8f3645eFca2587245799696a",
+        balancerDragonContractAddress:
+          "0x6BB26ecc0Db1E91979152406311215f8B0cA2e1c"
       };
+    case Network.LineaGoerli:
+      return {
+        nomadicYetiContractAddress:
+          "0x4F256A971bB10bec6Fef854C4b5D0D3c6C154734",
+        influentialWerewolfContractAddress:
+          "0x7A09C1C4081acE2836a1724a3262C6d7D3e776C8",
+        innovativeUnicornContractAddress:
+          "0x00711d691d20168629ED5D20F484C151da9a4D24",
+        simplifierKrakenContractAddress:
+          "0xDaad9f1c847dEdd1B54C037Ed5F63FD392c68cd0",
+        balancerDragonContractAddress:
+          "0xd4f548595E6fE4F9b2B0934146A721E3cad37157"
+      };
+    case Network.ArbitrumOne:
+      throw new Error("Not implemented!");
+    case Network.Linea:
+      throw new Error("Not implemented!");
 
     default:
       throw new Error("invalid network");
   }
 };
 
-export const GetZkSyncChainId = (network: Network) => {
+export const GetChainId = (network: Network) => {
+  const key = Network[network];
+  const value = Network[key as keyof typeof Network];
+  return value;
+};
+
+export const GetLzChainId = (network: Network) => {
   switch (network) {
-    case Network.Goerli:
-      return ZKSYNC_TST_CHAIN_ID;
-    case Network.Mainnet:
-      return ZKSYNC_PRD_CHAIN_ID;
+    case Network.ZksyncEra:
+      return 165;
+    case Network.ZksyncEraGoerli:
+      return 10165;
+    case Network.ArbitrumOne:
+      return 110;
+    case Network.ArbitrumGoerli:
+      return 10143;
+    case Network.Linea:
+      return 183;
+    case Network.LineaGoerli:
+      return 10157;
 
     default:
       throw new Error("invalid network");
   }
 };
 
-export const GetZkSyncProvider = (network: Network) => {
+export const GetRpcProvider = (network: Network) => {
   switch (network) {
-    case Network.Goerli:
-      return new Provider(ZKSYNC_TST_RPC_URL);
-    case Network.Mainnet:
-      return new Provider(ZKSYNC_PRD_RPC_URL);
+    case Network.ZksyncEra:
+      return new zksync.Provider(ZKSYNC_ERA_RPC_URL);
+    case Network.ZksyncEraGoerli:
+      return new zksync.Provider(ZKSYNC_ERA_GOERLI_RPC_URL);
+    case Network.ArbitrumOne:
+      return new ethers.providers.JsonRpcProvider(ARBITRUM_ONE_RPC_URL);
+    case Network.ArbitrumGoerli:
+      return new ethers.providers.JsonRpcProvider(ARBITRUM_GOERLI_RPC_URL);
+    case Network.Linea:
+      return new ethers.providers.JsonRpcProvider(LINEA_RPC_URL);
+    case Network.LineaGoerli:
+      return new ethers.providers.JsonRpcProvider(LINEA_GOERLI_RPC_URL);
 
     default:
       throw new Error("invalid network");
   }
 };
 
-export const GetZkSyncRpcUrl = (network: Network) => {
+export const GetRpcUrl = (network: Network) => {
   switch (network) {
-    case Network.Goerli:
-      return ZKSYNC_TST_RPC_URL;
-    case Network.Mainnet:
-      return ZKSYNC_PRD_RPC_URL;
+    case Network.ZksyncEra:
+      return ZKSYNC_ERA_GOERLI_RPC_URL;
+    case Network.ZksyncEraGoerli:
+      return ZKSYNC_ERA_GOERLI_RPC_URL;
+    case Network.ArbitrumOne:
+      return ARBITRUM_ONE_RPC_URL;
+    case Network.ArbitrumGoerli:
+      return ARBITRUM_GOERLI_RPC_URL;
+    case Network.Linea:
+      return LINEA_RPC_URL;
+    case Network.LineaGoerli:
+      return LINEA_GOERLI_RPC_URL;
 
     default:
       throw new Error("invalid network");

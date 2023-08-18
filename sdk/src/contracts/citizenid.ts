@@ -2,11 +2,11 @@
 import * as zksync from "zksync-web3";
 import { ethers } from "ethers";
 
-import { GetContractAddresses, GetZkSyncProvider } from "../utils";
+import { GetContractAddresses, GetRpcProvider } from "../utils";
 import { Network } from "../types";
 
 export class CitizenId {
-  readonly contract: zksync.Contract;
+  readonly contract: ethers.Contract;
 
   constructor(options: {
     web3Provider?: zksync.Web3Provider | ethers.providers.Web3Provider;
@@ -17,8 +17,10 @@ export class CitizenId {
     if (!network) throw new Error("network is reuired.");
     const { citizenIdContractAddress } = GetContractAddresses(network);
 
+    if (!citizenIdContractAddress) throw new Error("Contract not found!");
+
     if (web3Provider) {
-      this.contract = new zksync.Contract(
+      this.contract = new ethers.Contract(
         citizenIdContractAddress,
         require("../abi/CitizenId.json").abi,
         web3Provider.getSigner()
@@ -26,13 +28,13 @@ export class CitizenId {
     } else {
       if (!privateKey) throw new Error("private key is reuired.");
 
-      const zkSyncProvider = GetZkSyncProvider(network);
-      const wallet = new zksync.Wallet(privateKey, zkSyncProvider);
+      const rpcProvider = GetRpcProvider(network);
+      const wallet = new ethers.Wallet(privateKey, rpcProvider);
 
-      this.contract = new zksync.Contract(
+      this.contract = new ethers.Contract(
         citizenIdContractAddress,
         require("../abi/CitizenId.json").abi,
-        wallet._signerL2()
+        wallet
       );
     }
   }
@@ -40,7 +42,7 @@ export class CitizenId {
   public async MintCitizenID(): Promise<unknown> {
     const price = await this.contract.tokenPrice();
     const mintTx = await this.contract.mintCitizenId({
-      value: price,
+      value: price
     });
     await mintTx.wait();
 
@@ -48,9 +50,14 @@ export class CitizenId {
   }
 
   async GetCitizenID(address: string): Promise<number> {
-    const tokenId = await this.contract.tokenOfOwnerByIndex(address, 0);
+    const noOfCitizenId = await this.contract.balanceOf(address);
+    if (noOfCitizenId > 0) {
+      const tokenId = await this.contract.tokenOfOwnerByIndex(address, 0);
 
-    return tokenId;
+      return tokenId;
+    }
+
+    return 0;
   }
 
   async GetCitizenIDPrice(): Promise<number> {

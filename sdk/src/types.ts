@@ -1,10 +1,13 @@
-// Ethereum network
+// Ethereum networks
 export enum Network {
-  Mainnet = 1,
+  // mainnets
+  Ethereum = 1,
+  ZksyncEra = 324,
+  ArbitrumOne = 42161,
+  Linea = 59144,
+  // testnets
   Goerli = 5,
-}
-
-export enum Web3Provider {
-  Metamask = 0,
-  Argent = 1,
+  ZksyncEraGoerli = 280,
+  ArbitrumGoerli = 421613,
+  LineaGoerli = 59140
 }

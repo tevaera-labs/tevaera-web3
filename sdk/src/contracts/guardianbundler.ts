@@ -5,7 +5,7 @@ import { ethers } from "ethers";
 import { GetContractAddresses, GetRpcProvider } from "../utils";
 import { Network } from "../types";
 
-export class ReformistSphinx {
+export class GuardianBundler {
   readonly contract: ethers.Contract;
 
   constructor(options: {
@@ -15,14 +15,14 @@ export class ReformistSphinx {
   }) {
     const { web3Provider, network, privateKey } = options;
     if (!network) throw new Error("network is reuired.");
-    const { reformistSphinxContractAddress } = GetContractAddresses(network);
+    const { guardianBundlerContractAddress } = GetContractAddresses(network);
 
-    if (!reformistSphinxContractAddress) throw new Error("Contract not found!");
+    if (!guardianBundlerContractAddress) throw new Error("Contract not found!");
 
     if (web3Provider) {
       this.contract = new ethers.Contract(
-        reformistSphinxContractAddress,
-        require("../abi/ReformistSphinx.json").abi,
+        guardianBundlerContractAddress,
+        require("../abi/GuardianBundler.json").abi,
         web3Provider.getSigner()
       );
     } else {
@@ -32,8 +32,8 @@ export class ReformistSphinx {
       const wallet = new ethers.Wallet(privateKey, rpcProvider);
 
       this.contract = new ethers.Contract(
-        reformistSphinxContractAddress,
-        require("../abi/ReformistSphinx.json").abi,
+        guardianBundlerContractAddress,
+        require("../abi/GuardianBundler.json").abi,
         wallet
       );
     }
@@ -45,11 +45,11 @@ export class ReformistSphinx {
     return uri;
   }
 
-  async GetReformistSphinxByWallet(
+  async GetGuardianBundlerByWallet(
     address: string
   ): Promise<number | undefined> {
-    const noOfReformistSphinx = await this.contract.balanceOf(address);
-    if (noOfReformistSphinx > 0) {
+    const noOfGuardianBundler = await this.contract.balanceOf(address);
+    if (noOfGuardianBundler > 0) {
       const tokenId = await this.contract.tokenOfOwnerByIndex(address, 0);
       return tokenId;
     }
@@ -57,10 +57,10 @@ export class ReformistSphinx {
     return undefined;
   }
 
-  async GetReformistSphinxesByWallet(address: string): Promise<number[]> {
-    const noOfReformistSphinx = await this.contract.balanceOf(address);
+  async GetGuardianBundleresByWallet(address: string): Promise<number[]> {
+    const noOfGuardianBundler = await this.contract.balanceOf(address);
     const tokenIds: number[] = [];
-    for (let index = 0; index < noOfReformistSphinx; index++) {
+    for (let index = 0; index < noOfGuardianBundler; index++) {
       const tokenId = await this.contract.tokenOfOwnerByIndex(address, index);
       tokenIds.push(tokenId);
     }
@@ -68,8 +68,17 @@ export class ReformistSphinx {
     return tokenIds;
   }
 
-  async MintReformistSphinx(): Promise<unknown> {
-    const mintTx = await this.contract.mint();
+  async GetGuardianBundlerPrice(): Promise<number> {
+    const price = await this.contract.bundlePrice();
+
+    return price;
+  }
+
+  async MintGuardianBundler(): Promise<unknown> {
+    const price = await this.contract.bundlePrice();
+    const mintTx = await this.contract.mintBundle({
+      value: price
+    });
     await mintTx.wait();
 
     return mintTx;
