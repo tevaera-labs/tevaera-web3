@@ -2,7 +2,7 @@
 import * as zksync from "zksync-web3";
 import { ethers } from "ethers";
 
-import { GetContractAddresses, GetRpcProvider } from "../utils";
+import { getContractAddresses, getRpcProvider } from "../utils";
 import { Network } from "../types";
 
 export class Claim {
@@ -15,7 +15,7 @@ export class Claim {
   }) {
     const { web3Provider, network, privateKey } = options;
     if (!network) throw new Error("network is reuired.");
-    const { claimContractAddress } = GetContractAddresses(network);
+    const { claimContractAddress } = getContractAddresses(network);
 
     if (!claimContractAddress) throw new Error("Contract not found!");
 
@@ -28,7 +28,7 @@ export class Claim {
     } else {
       if (!privateKey) throw new Error("private key is reuired.");
 
-      const rpcProvider = GetRpcProvider(network);
+      const rpcProvider = getRpcProvider(network);
       const wallet = new ethers.Wallet(privateKey, rpcProvider);
 
       this.contract = new ethers.Contract(
@@ -39,7 +39,7 @@ export class Claim {
     }
   }
 
-  async Claim(citizenIdPrice: number): Promise<unknown> {
+  async claim(citizenIdPrice: number): Promise<unknown> {
     const claimTx = await this.contract.claim({
       value: citizenIdPrice
     });

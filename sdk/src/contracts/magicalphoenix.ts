@@ -2,7 +2,7 @@
 import * as zksync from "zksync-web3";
 import { ethers } from "ethers";
 
-import { GetContractAddresses, GetRpcProvider } from "../utils";
+import { getContractAddresses, getRpcProvider } from "../utils";
 import { Network } from "../types";
 
 export class MagicalPhoenix {
@@ -15,7 +15,7 @@ export class MagicalPhoenix {
   }) {
     const { web3Provider, network, privateKey } = options;
     if (!network) throw new Error("network is reuired.");
-    const { magicalPhoenixContractAddress } = GetContractAddresses(network);
+    const { magicalPhoenixContractAddress } = getContractAddresses(network);
 
     if (!magicalPhoenixContractAddress) throw new Error("Contract not found!");
 
@@ -28,7 +28,7 @@ export class MagicalPhoenix {
     } else {
       if (!privateKey) throw new Error("private key is reuired.");
 
-      const rpcProvider = GetRpcProvider(network);
+      const rpcProvider = getRpcProvider(network);
       const wallet = new ethers.Wallet(privateKey, rpcProvider);
 
       this.contract = new ethers.Contract(
@@ -39,13 +39,13 @@ export class MagicalPhoenix {
     }
   }
 
-  async GetMetadataUri(tokenId: number): Promise<string> {
+  async getMetadataUri(tokenId: number): Promise<string> {
     const uri = await this.contract.tokenURI(tokenId);
 
     return uri;
   }
 
-  async GetMagicalPhoenixByWallet(
+  async getMagicalPhoenixByWallet(
     address: string
   ): Promise<number | undefined> {
     const noOfMagicalPhoenix = await this.contract.balanceOf(address);
@@ -57,7 +57,7 @@ export class MagicalPhoenix {
     return undefined;
   }
 
-  async GetMagicalPhoenixesByWallet(address: string): Promise<number[]> {
+  async getMagicalPhoenixesByWallet(address: string): Promise<number[]> {
     const noOfMagicalPhoenix = await this.contract.balanceOf(address);
     const tokenIds: number[] = [];
     for (let index = 0; index < noOfMagicalPhoenix; index++) {
@@ -68,14 +68,14 @@ export class MagicalPhoenix {
     return tokenIds;
   }
 
-  async MintMagicalPhoenix(): Promise<unknown> {
+  async mintMagicalPhoenix(): Promise<unknown> {
     const mintTx = await this.contract.mint();
     await mintTx.wait();
 
     return mintTx;
   }
 
-  async IsWhitelisted(address: string): Promise<boolean> {
+  async isWhitelisted(address: string): Promise<boolean> {
     const isWhitelisted = await this.contract.whitelisted(address);
 
     return isWhitelisted;

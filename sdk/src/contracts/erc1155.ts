@@ -2,7 +2,7 @@
 import * as zksync from "zksync-web3";
 import { ethers } from "ethers";
 
-import { GetRpcProvider } from "../utils";
+import { getRpcProvider } from "../utils";
 import { Network } from "../types";
 
 export class ERC1155 {
@@ -29,7 +29,7 @@ export class ERC1155 {
     } else {
       if (!privateKey) throw new Error("private key is reuired.");
 
-      const rpcProvider = GetRpcProvider(network);
+      const rpcProvider = getRpcProvider(network);
       const wallet = new ethers.Wallet(privateKey, rpcProvider);
 
       this.contract = new ethers.Contract(
@@ -40,17 +40,17 @@ export class ERC1155 {
     }
   }
 
-  async GetContractURI(): Promise<string> {
+  async getContractURI(): Promise<string> {
     const contractURI = await this.contract.contractURI();
     return contractURI;
   }
 
-  async GetOwner(): Promise<string> {
+  async getOwner(): Promise<string> {
     const owner = await this.contract.owner();
     return owner;
   }
 
-  async IsERC1155(): Promise<boolean> {
+  async isERC1155(): Promise<boolean> {
     const erc1155InterfaceId = ethers.utils.arrayify("0xd9b67a26");
     const isErc1155 = await this.contract.supportsInterface(erc1155InterfaceId);
     return isErc1155;

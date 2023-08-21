@@ -2,8 +2,11 @@
 import * as zksync from "zksync-web3";
 import { ethers } from "ethers";
 
-import { GetContractAddresses, GetRpcProvider } from "../utils";
-import { getPaymasterCustomOverrides } from "./common";
+import {
+  getContractAddresses,
+  getPaymasterCustomOverrides,
+  getRpcProvider
+} from "../utils";
 import { Network } from "../types";
 
 export class InfluentialWerewolf {
@@ -22,7 +25,7 @@ export class InfluentialWerewolf {
     const { web3Provider, network, privateKey } = options;
     if (!network) throw new Error("network is reuired.");
     const { influentialWerewolfContractAddress } =
-      GetContractAddresses(network);
+      getContractAddresses(network);
 
     if (!influentialWerewolfContractAddress)
       throw new Error("Contract not found!");
@@ -36,7 +39,7 @@ export class InfluentialWerewolf {
     } else {
       if (!privateKey) throw new Error("private key is reuired.");
 
-      const rpcProvider = GetRpcProvider(network);
+      const rpcProvider = getRpcProvider(network);
       const wallet = new ethers.Wallet(privateKey, rpcProvider);
 
       this.contract = new ethers.Contract(
@@ -50,13 +53,13 @@ export class InfluentialWerewolf {
     this.web3Provider = web3Provider;
   }
 
-  async GetMetadataUri(tokenId: number): Promise<string> {
+  async getMetadataUri(tokenId: number): Promise<string> {
     const uri = await this.contract.tokenURI(tokenId);
 
     return uri;
   }
 
-  async GetInfluentialWerewolfByWallet(
+  async getInfluentialWerewolfByWallet(
     address: string
   ): Promise<number | undefined> {
     const noOfInfluentialWerewolf = await this.contract.balanceOf(address);
@@ -68,7 +71,7 @@ export class InfluentialWerewolf {
     return undefined;
   }
 
-  async GetInfluentialWerewolfesByWallet(address: string): Promise<number[]> {
+  async getInfluentialWerewolfesByWallet(address: string): Promise<number[]> {
     const noOfInfluentialWerewolf = await this.contract.balanceOf(address);
     const tokenIds: number[] = [];
     for (let index = 0; index < noOfInfluentialWerewolf; index++) {
@@ -79,13 +82,13 @@ export class InfluentialWerewolf {
     return tokenIds;
   }
 
-  async GetInfluentialWerewolfPrice(): Promise<number> {
+  async getInfluentialWerewolfPrice(): Promise<number> {
     const price = await this.contract.tokenPrice();
 
     return price;
   }
 
-  async MintInfluentialWerewolf(
+  async mintInfluentialWerewolf(
     feeToken?: string,
     isGaslessFlow?: boolean
   ): Promise<unknown> {

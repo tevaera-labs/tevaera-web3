@@ -2,8 +2,11 @@
 import * as zksync from "zksync-web3";
 import { ethers } from "ethers";
 
-import { GetContractAddresses, GetRpcProvider } from "../utils";
-import { getPaymasterCustomOverrides } from "./common";
+import {
+  getContractAddresses,
+  getPaymasterCustomOverrides,
+  getRpcProvider
+} from "../utils";
 import { Network } from "../types";
 
 export class CitizenId {
@@ -21,7 +24,7 @@ export class CitizenId {
   }) {
     const { web3Provider, network, privateKey } = options;
     if (!network) throw new Error("network is reuired.");
-    const { citizenIdContractAddress } = GetContractAddresses(network);
+    const { citizenIdContractAddress } = getContractAddresses(network);
 
     if (!citizenIdContractAddress) throw new Error("Contract not found!");
 
@@ -34,7 +37,7 @@ export class CitizenId {
     } else {
       if (!privateKey) throw new Error("private key is reuired.");
 
-      const rpcProvider = GetRpcProvider(network);
+      const rpcProvider = getRpcProvider(network);
       const wallet = new ethers.Wallet(privateKey, rpcProvider);
 
       this.contract = new ethers.Contract(
@@ -48,7 +51,7 @@ export class CitizenId {
     this.web3Provider = web3Provider;
   }
 
-  public async MintCitizenID(
+  public async mintCitizenID(
     feeToken?: string,
     isGaslessFlow?: boolean
   ): Promise<unknown> {
@@ -72,7 +75,7 @@ export class CitizenId {
     return mintTx;
   }
 
-  async GetCitizenID(address: string): Promise<number> {
+  async getCitizenID(address: string): Promise<number> {
     const noOfCitizenId = await this.contract.balanceOf(address);
     if (noOfCitizenId > 0) {
       const tokenId = await this.contract.tokenOfOwnerByIndex(address, 0);
@@ -83,19 +86,19 @@ export class CitizenId {
     return 0;
   }
 
-  async GetCitizenIDPrice(): Promise<number> {
+  async getCitizenIDPrice(): Promise<number> {
     const price = await this.contract.tokenPrice();
 
     return price;
   }
 
-  async GetMetadataUri(citizenId: number): Promise<string> {
+  async getMetadataUri(citizenId: number): Promise<string> {
     const uri = await this.contract.tokenURI(citizenId);
 
     return uri;
   }
 
-  async UpdateRep(tokens: number[], reps: number[]): Promise<string> {
+  async updateRep(tokens: number[], reps: number[]): Promise<string> {
     const batchTx = await this.contract.updateRep(tokens, reps);
 
     await batchTx.wait();

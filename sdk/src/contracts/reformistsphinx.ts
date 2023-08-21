@@ -2,8 +2,11 @@
 import * as zksync from "zksync-web3";
 import { ethers } from "ethers";
 
-import { GetContractAddresses, GetRpcProvider } from "../utils";
-import { getPaymasterCustomOverrides } from "./common";
+import {
+  getContractAddresses,
+  getPaymasterCustomOverrides,
+  getRpcProvider
+} from "../utils";
 import { Network } from "../types";
 
 export class ReformistSphinx {
@@ -21,7 +24,7 @@ export class ReformistSphinx {
   }) {
     const { web3Provider, network, privateKey } = options;
     if (!network) throw new Error("network is reuired.");
-    const { reformistSphinxContractAddress } = GetContractAddresses(network);
+    const { reformistSphinxContractAddress } = getContractAddresses(network);
 
     if (!reformistSphinxContractAddress) throw new Error("Contract not found!");
 
@@ -34,7 +37,7 @@ export class ReformistSphinx {
     } else {
       if (!privateKey) throw new Error("private key is reuired.");
 
-      const rpcProvider = GetRpcProvider(network);
+      const rpcProvider = getRpcProvider(network);
       const wallet = new ethers.Wallet(privateKey, rpcProvider);
 
       this.contract = new ethers.Contract(
@@ -48,13 +51,13 @@ export class ReformistSphinx {
     this.web3Provider = web3Provider;
   }
 
-  async GetMetadataUri(tokenId: number): Promise<string> {
+  async getMetadataUri(tokenId: number): Promise<string> {
     const uri = await this.contract.tokenURI(tokenId);
 
     return uri;
   }
 
-  async GetReformistSphinxByWallet(
+  async getReformistSphinxByWallet(
     address: string
   ): Promise<number | undefined> {
     const noOfReformistSphinx = await this.contract.balanceOf(address);
@@ -66,7 +69,7 @@ export class ReformistSphinx {
     return undefined;
   }
 
-  async GetReformistSphinxesByWallet(address: string): Promise<number[]> {
+  async getReformistSphinxesByWallet(address: string): Promise<number[]> {
     const noOfReformistSphinx = await this.contract.balanceOf(address);
     const tokenIds: number[] = [];
     for (let index = 0; index < noOfReformistSphinx; index++) {
@@ -77,7 +80,7 @@ export class ReformistSphinx {
     return tokenIds;
   }
 
-  async MintReformistSphinx(
+  async mintReformistSphinx(
     feeToken?: string,
     isGaslessFlow?: boolean
   ): Promise<unknown> {

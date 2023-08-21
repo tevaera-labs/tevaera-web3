@@ -2,8 +2,11 @@
 import * as zksync from "zksync-web3";
 import { ethers } from "ethers";
 
-import { GetContractAddresses, GetRpcProvider } from "../utils";
-import { getPaymasterCustomOverrides } from "./common";
+import {
+  getContractAddresses,
+  getPaymasterCustomOverrides,
+  getRpcProvider
+} from "../utils";
 import { Network } from "../types";
 
 export class BalancerDragon {
@@ -21,7 +24,7 @@ export class BalancerDragon {
   }) {
     const { web3Provider, network, privateKey } = options;
     if (!network) throw new Error("network is reuired.");
-    const { balancerDragonContractAddress } = GetContractAddresses(network);
+    const { balancerDragonContractAddress } = getContractAddresses(network);
 
     if (!balancerDragonContractAddress) throw new Error("Contract not found!");
 
@@ -34,7 +37,7 @@ export class BalancerDragon {
     } else {
       if (!privateKey) throw new Error("private key is reuired.");
 
-      const rpcProvider = GetRpcProvider(network);
+      const rpcProvider = getRpcProvider(network);
       const wallet = new ethers.Wallet(privateKey, rpcProvider);
 
       this.contract = new ethers.Contract(
@@ -48,13 +51,13 @@ export class BalancerDragon {
     this.web3Provider = web3Provider;
   }
 
-  async GetMetadataUri(tokenId: number): Promise<string> {
+  async getMetadataUri(tokenId: number): Promise<string> {
     const uri = await this.contract.tokenURI(tokenId);
 
     return uri;
   }
 
-  async GetBalancerDragonByWallet(
+  async getBalancerDragonByWallet(
     address: string
   ): Promise<number | undefined> {
     const noOfBalancerDragon = await this.contract.balanceOf(address);
@@ -66,7 +69,7 @@ export class BalancerDragon {
     return undefined;
   }
 
-  async GetBalancerDragonesByWallet(address: string): Promise<number[]> {
+  async getBalancerDragonesByWallet(address: string): Promise<number[]> {
     const noOfBalancerDragon = await this.contract.balanceOf(address);
     const tokenIds: number[] = [];
     for (let index = 0; index < noOfBalancerDragon; index++) {
@@ -78,13 +81,13 @@ export class BalancerDragon {
     return tokenIds;
   }
 
-  async GetBalancerDragonPrice(): Promise<number> {
+  async getBalancerDragonPrice(): Promise<number> {
     const price = await this.contract.tokenPrice();
 
     return price;
   }
 
-  async MintBalancerDragon(
+  async mintBalancerDragon(
     feeToken?: string,
     isGaslessFlow?: boolean
   ): Promise<unknown> {

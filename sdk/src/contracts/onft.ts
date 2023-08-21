@@ -2,9 +2,11 @@
 import * as zksync from "zksync-web3";
 import { BigNumber, BigNumberish, ethers, utils } from "ethers";
 
-import { GetLzChainId, GetRpcProvider } from "../utils";
-import { getPaymasterCustomOverrides } from "./common";
-import { formatUnits } from "ethers/lib/utils";
+import {
+  getLzChainId,
+  getPaymasterCustomOverrides,
+  getRpcProvider
+} from "../utils";
 import { Network } from "../types";
 
 export class ONFT {
@@ -35,7 +37,7 @@ export class ONFT {
     } else {
       if (!privateKey) throw new Error("private key is reuired.");
 
-      const rpcProvider = GetRpcProvider(network);
+      const rpcProvider = getRpcProvider(network);
       const wallet = new ethers.Wallet(privateKey, rpcProvider);
 
       this.contract = new ethers.Contract(
@@ -49,44 +51,44 @@ export class ONFT {
     this.web3Provider = web3Provider;
   }
 
-  async GetBalanceOf(address: string): Promise<number> {
+  async getBalanceOf(address: string): Promise<number> {
     const balance = await this.contract.balanceOf(address);
     return balance;
   }
 
-  async GetName(): Promise<string> {
+  async getName(): Promise<string> {
     const name = await this.contract.name();
     return name;
   }
 
-  async GetSymbol(): Promise<string> {
+  async getSymbol(): Promise<string> {
     const symbol = await this.contract.symbol();
     return symbol;
   }
 
-  async GetOwnerOf(tokenId: string): Promise<string> {
+  async getOwnerOf(tokenId: string): Promise<string> {
     const address = await this.contract.ownerOf(
       ethers.utils.parseUnits(tokenId, 0)
     );
     return address;
   }
 
-  async GetTotalSupply(): Promise<string> {
+  async getTotalSupply(): Promise<string> {
     const totalSupply = await this.contract.totalSupply();
-    return formatUnits(totalSupply, 0);
+    return utils.formatUnits(totalSupply, 0);
   }
 
-  async GetContractURI(): Promise<string> {
+  async getContractURI(): Promise<string> {
     const contractURI = await this.contract.contractURI();
     return contractURI;
   }
 
-  async GetOwner(): Promise<string> {
+  async getOwner(): Promise<string> {
     const owner = await this.contract.owner();
     return owner;
   }
 
-  async GetRoyaltyInfo(
+  async getRoyaltyInfo(
     tokenId: string,
     salePrice: string
   ): Promise<{ receiver?: string; royaltyAmount: number }> {
@@ -105,7 +107,7 @@ export class ONFT {
 
   // ONFT Routines
 
-  async GetCrosschainFeeEstimation(
+  async getCrosschainFeeEstimation(
     dest: Network,
     wallet: string,
     tokenId: BigNumberish
@@ -114,7 +116,7 @@ export class ONFT {
       ["uint16", "uint256"],
       ["1", "350000"] // package type (1 = send), min gas = 350000 wei
     );
-    const destChainId = GetLzChainId(dest);
+    const destChainId = getLzChainId(dest);
     const fee = await this.contract.estimateSendFee(
       destChainId,
       wallet,
@@ -125,7 +127,7 @@ export class ONFT {
     return utils.formatEther(fee.nativeFee);
   }
 
-  async CrosschainTransfer(
+  async crosschainTransfer(
     dest: Network,
     wallet: string,
     tokenId: BigNumberish,
@@ -138,7 +140,7 @@ export class ONFT {
       ["uint16", "uint256"],
       ["1", "350000"] // package type (1 = send), min gas = 350000 wei
     );
-    const destChainId = GetLzChainId(dest);
+    const destChainId = getLzChainId(dest);
 
     // prepare overrides
     let overrides = {
@@ -170,7 +172,7 @@ export class ONFT {
     return tx;
   }
 
-  async IsONft(): Promise<boolean> {
+  async isONft(): Promise<boolean> {
     const onftInterfaceId = ethers.utils.arrayify("0x02c7ea66");
     const isONft = await this.contract.supportsInterface(onftInterfaceId);
     return isONft;

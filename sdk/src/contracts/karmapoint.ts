@@ -2,7 +2,7 @@
 import { ethers } from "ethers";
 import * as zksync from "zksync-web3";
 
-import { GetContractAddresses, GetRpcProvider } from "../utils";
+import { getContractAddresses, getRpcProvider } from "../utils";
 import { formatUnits } from "ethers/lib/utils";
 import { Network } from "../types";
 
@@ -16,7 +16,7 @@ export class KarmaPoint {
   }) {
     const { web3Provider, network, privateKey } = options;
     if (!network) throw new Error("network is reuired.");
-    const { karmaPointContractAddress } = GetContractAddresses(network);
+    const { karmaPointContractAddress } = getContractAddresses(network);
 
     if (!karmaPointContractAddress) throw new Error("Contract not found!");
 
@@ -29,7 +29,7 @@ export class KarmaPoint {
     } else {
       if (!privateKey) throw new Error("private key is reuired.");
 
-      const rpcProvider = GetRpcProvider(network);
+      const rpcProvider = getRpcProvider(network);
       const wallet = new ethers.Wallet(privateKey, rpcProvider);
 
       this.contract = new ethers.Contract(
@@ -40,41 +40,41 @@ export class KarmaPoint {
     }
   }
 
-  async GetKpBalance(address: string): Promise<number> {
+  async getKpBalance(address: string): Promise<number> {
     const balance = await this.contract.balanceOf(address);
     return balance;
   }
 
-  async GetKpBuyCap(): Promise<number> {
+  async getKpBuyCap(): Promise<number> {
     const capping = await this.contract.buyCap();
     return capping;
   }
 
-  async GetKpPrice(kpAmount: number): Promise<string> {
+  async getKpPrice(kpAmount: number): Promise<string> {
     const price = await this.contract.getPrice(kpAmount);
     const formattedPrice = formatUnits(price, 18);
 
     return formattedPrice;
   }
 
-  async GetKpBuyingCap(): Promise<number> {
+  async getKpBuyingCap(): Promise<number> {
     return this.contract.buyCap();
   }
 
-  async GetBoughtKarmaPoints(wallet: string): Promise<number> {
+  async getBoughtKarmaPoints(wallet: string): Promise<number> {
     return this.contract.boughtKP(wallet);
   }
 
-  async BuyKarmaPoints(kpAmount: number): Promise<unknown> {
+  async buyKarmaPoints(kpAmount: number): Promise<unknown> {
     const tx = await this.contract.buy(kpAmount, {
-      value: ethers.utils.parseUnits(await this.GetKpPrice(kpAmount), 18)
+      value: ethers.utils.parseUnits(await this.getKpPrice(kpAmount), 18)
     });
     await tx.wait();
 
     return tx;
   }
 
-  async WithdrawKarmaPoints(kpAmount: number): Promise<unknown> {
+  async withdrawKarmaPoints(kpAmount: number): Promise<unknown> {
     const tx = await this.contract.withdraw(kpAmount);
     await tx.wait();
 

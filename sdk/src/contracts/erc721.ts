@@ -2,7 +2,7 @@
 import * as zksync from "zksync-web3";
 import { ethers } from "ethers";
 
-import { GetRpcProvider } from "../utils";
+import { getRpcProvider } from "../utils";
 import { formatUnits } from "ethers/lib/utils";
 import { Network } from "../types";
 
@@ -30,7 +30,7 @@ export class ERC721 {
     } else {
       if (!privateKey) throw new Error("private key is reuired.");
 
-      const rpcProvider = GetRpcProvider(network);
+      const rpcProvider = getRpcProvider(network);
       const wallet = new ethers.Wallet(privateKey, rpcProvider);
 
       this.contract = new ethers.Contract(
@@ -41,44 +41,44 @@ export class ERC721 {
     }
   }
 
-  async GetBalanceOf(address: string): Promise<number> {
+  async getBalanceOf(address: string): Promise<number> {
     const balance = await this.contract.balanceOf(address);
     return balance;
   }
 
-  async GetName(): Promise<string> {
+  async getName(): Promise<string> {
     const name = await this.contract.name();
     return name;
   }
 
-  async GetSymbol(): Promise<string> {
+  async getSymbol(): Promise<string> {
     const symbol = await this.contract.symbol();
     return symbol;
   }
 
-  async GetOwnerOf(tokenId: string): Promise<string> {
+  async getOwnerOf(tokenId: string): Promise<string> {
     const address = await this.contract.ownerOf(
       ethers.utils.parseUnits(tokenId, 0)
     );
     return address;
   }
 
-  async GetTotalSupply(): Promise<string> {
+  async getTotalSupply(): Promise<string> {
     const totalSupply = await this.contract.totalSupply();
     return formatUnits(totalSupply, 0);
   }
 
-  async GetContractURI(): Promise<string> {
+  async getContractURI(): Promise<string> {
     const contractURI = await this.contract.contractURI();
     return contractURI;
   }
 
-  async GetOwner(): Promise<string> {
+  async getOwner(): Promise<string> {
     const owner = await this.contract.owner();
     return owner;
   }
 
-  async GetRoyaltyInfo(
+  async getRoyaltyInfo(
     tokenId: string,
     salePrice: string
   ): Promise<{ receiver?: string; royaltyAmount: number }> {
@@ -95,7 +95,7 @@ export class ERC721 {
     };
   }
 
-  async IsERC721(): Promise<boolean> {
+  async isERC721(): Promise<boolean> {
     const erc721InterfaceId = ethers.utils.arrayify("0x80ac58cd");
     const isErc721 = await this.contract.supportsInterface(erc721InterfaceId);
     return isErc721;
