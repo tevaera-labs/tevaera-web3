@@ -3,11 +3,17 @@ import * as zksync from "zksync-web3";
 import { BigNumber, BigNumberish, ethers, utils } from "ethers";
 
 import { GetLzChainId, GetRpcProvider } from "../utils";
+import { getPaymasterCustomOverrides } from "./common";
 import { formatUnits } from "ethers/lib/utils";
 import { Network } from "../types";
 
 export class ONFT {
   readonly contract: ethers.Contract;
+  readonly network: Network;
+  readonly web3Provider:
+    | zksync.Web3Provider
+    | ethers.providers.Web3Provider
+    | undefined;
 
   constructor(options: {
     web3Provider?: zksync.Web3Provider | ethers.providers.Web3Provider;
@@ -38,6 +44,9 @@ export class ONFT {
         wallet
       );
     }
+
+    this.network = network;
+    this.web3Provider = web3Provider;
   }
 
   async GetBalanceOf(address: string): Promise<number> {
@@ -121,7 +130,9 @@ export class ONFT {
     wallet: string,
     tokenId: BigNumberish,
     refundAddress: string,
-    fee: string
+    fee: string,
+    feeToken?: string,
+    isGaslessFlow?: boolean
   ): Promise<unknown> {
     const adapterParams = ethers.utils.solidityPack(
       ["uint16", "uint256"],
@@ -129,18 +140,20 @@ export class ONFT {
     );
     const destChainId = GetLzChainId(dest);
 
-    console.log({
-      from: wallet,
-      destChainId,
-      to: wallet,
-      tokenId: BigNumber.from(tokenId),
-      refundAddress,
-      zro: "0x0000000000000000000000000000000000000000",
-      adapterParams,
-      value: {
-        value: utils.parseEther(fee)
-      }
-    });
+    // prepare overrides
+    let overrides = {
+      value: utils.parseEther(fee)
+    };
+    // get paymaster overrides if applicable
+    if (this.web3Provider) {
+      overrides = await getPaymasterCustomOverrides({
+        web3Provider: this.web3Provider,
+        network: this.network,
+        overrides,
+        feeToken,
+        isGaslessFlow
+      });
+    }
 
     const tx = await this.contract.sendFrom(
       wallet,
@@ -150,9 +163,7 @@ export class ONFT {
       refundAddress,
       "0x0000000000000000000000000000000000000000",
       adapterParams,
-      {
-        value: utils.parseEther(fee)
-      }
+      overrides
     );
 
     await tx.wait();

@@ -3,10 +3,16 @@ import * as zksync from "zksync-web3";
 import { ethers } from "ethers";
 
 import { GetContractAddresses, GetRpcProvider } from "../utils";
+import { getPaymasterCustomOverrides } from "./common";
 import { Network } from "../types";
 
 export class SimplifierKraken {
   readonly contract: ethers.Contract;
+  readonly network: Network;
+  readonly web3Provider:
+    | zksync.Web3Provider
+    | ethers.providers.Web3Provider
+    | undefined;
 
   constructor(options: {
     web3Provider?: zksync.Web3Provider | ethers.providers.Web3Provider;
@@ -38,6 +44,9 @@ export class SimplifierKraken {
         wallet
       );
     }
+
+    this.network = network;
+    this.web3Provider = web3Provider;
   }
 
   async GetMetadataUri(tokenId: number): Promise<string> {
@@ -75,11 +84,25 @@ export class SimplifierKraken {
     return price;
   }
 
-  async MintSimplifierKraken(): Promise<unknown> {
+  async MintSimplifierKraken(
+    feeToken?: string,
+    isGaslessFlow?: boolean
+  ): Promise<unknown> {
     const price = await this.contract.tokenPrice();
-    const mintTx = await this.contract.mint({
+    let overrides = {
       value: price
-    });
+    };
+    // get paymaster overrides if applicable
+    if (this.web3Provider) {
+      overrides = await getPaymasterCustomOverrides({
+        web3Provider: this.web3Provider,
+        network: this.network,
+        overrides,
+        feeToken,
+        isGaslessFlow
+      });
+    }
+    const mintTx = await this.contract.mint(overrides);
     await mintTx.wait();
 
     return mintTx;
