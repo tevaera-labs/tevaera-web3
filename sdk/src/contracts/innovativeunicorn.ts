@@ -70,7 +70,7 @@ export class InnovativeUnicorn {
     return undefined;
   }
 
-  async getInnovativeUnicornesByWallet(address: string): Promise<number[]> {
+  async getInnovativeUnicornsByWallet(address: string): Promise<number[]> {
     const noOfInnovativeUnicorn = await this.contract.balanceOf(address);
     const tokenIds: number[] = [];
     for (let index = 0; index < noOfInnovativeUnicorn; index++) {

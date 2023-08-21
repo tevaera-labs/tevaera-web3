@@ -69,7 +69,7 @@ export class BalancerDragon {
     return undefined;
   }
 
-  async getBalancerDragonesByWallet(address: string): Promise<number[]> {
+  async getBalancerDragonsByWallet(address: string): Promise<number[]> {
     const noOfBalancerDragon = await this.contract.balanceOf(address);
     const tokenIds: number[] = [];
     for (let index = 0; index < noOfBalancerDragon; index++) {

@@ -70,7 +70,7 @@ export class SimplifierKraken {
     return undefined;
   }
 
-  async getSimplifierKrakenesByWallet(address: string): Promise<number[]> {
+  async getSimplifierKrakensByWallet(address: string): Promise<number[]> {
     const noOfSimplifierKraken = await this.contract.balanceOf(address);
     const tokenIds: number[] = [];
     for (let index = 0; index < noOfSimplifierKraken; index++) {
