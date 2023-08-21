@@ -1,6 +1,6 @@
 {
   "name": "@tevaeralabs/tevaera-web3",
-  "version": "0.0.38-development",
+  "version": "0.0.39-development",
   "description": "An npm package to interact with smart contracts ccreated by Tevaera Labs on the zkSync network(A L2 solution on ethereum network). It can be used in browser applications.",
   "exports": {
     ".": {
