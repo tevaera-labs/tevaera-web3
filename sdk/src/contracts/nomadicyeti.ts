@@ -67,7 +67,7 @@ export class NomadicYeti {
     return undefined;
   }
 
-  async getNomadicYetiesByWallet(address: string): Promise<number[]> {
+  async getNomadicYetisByWallet(address: string): Promise<number[]> {
     const noOfNomadicYeti = await this.contract.balanceOf(address);
     const tokenIds: number[] = [];
     for (let index = 0; index < noOfNomadicYeti; index++) {
