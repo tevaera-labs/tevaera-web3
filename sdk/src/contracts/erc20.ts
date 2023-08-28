@@ -24,7 +24,7 @@ export class ERC20 {
       this.contract = new ethers.Contract(
         erc20ContractAddress,
         require("../abi/ERC20.json").abi,
-        web3Provider
+        web3Provider.getSigner() || web3Provider
       );
     } else {
       if (!privateKey) throw new Error("private key is reuired.");

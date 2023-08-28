@@ -168,12 +168,11 @@ export class ONFT {
       overrides
     );
 
-    await tx.wait();
     return tx;
   }
 
   async isONft(): Promise<boolean> {
-    const onftInterfaceId = ethers.utils.arrayify("0x02c7ea66");
+    const onftInterfaceId = ethers.utils.arrayify("0x22bac5d9");
     const isONft = await this.contract.supportsInterface(onftInterfaceId);
     return isONft;
   }
