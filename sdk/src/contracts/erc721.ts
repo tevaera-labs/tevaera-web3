@@ -8,6 +8,7 @@ import { Network } from "../types";
 
 export class ERC721 {
   readonly contract: ethers.Contract;
+  readonly network: Network;
 
   constructor(options: {
     web3Provider?: zksync.Web3Provider | ethers.providers.Web3Provider;
@@ -28,17 +29,19 @@ export class ERC721 {
         web3Provider
       );
     } else {
-      if (!privateKey) throw new Error("private key is reuired.");
-
       const rpcProvider = getRpcProvider(network);
-      const wallet = new ethers.Wallet(privateKey, rpcProvider);
+
+      let wallet;
+      if (privateKey) wallet = new ethers.Wallet(privateKey, rpcProvider);
 
       this.contract = new ethers.Contract(
         erc721ContractAddress,
         require("../abi/ERC721.json").abi,
-        wallet
+        wallet || rpcProvider
       );
     }
+
+    this.network = network;
   }
 
   async getBalanceOf(address: string): Promise<number> {

@@ -23,18 +23,18 @@ export class Claim {
       this.contract = new ethers.Contract(
         claimContractAddress,
         require("../abi/Claim.json").abi,
-        web3Provider.getSigner()
+        web3Provider.getSigner() || web3Provider
       );
     } else {
-      if (!privateKey) throw new Error("private key is reuired.");
-
       const rpcProvider = getRpcProvider(network);
-      const wallet = new ethers.Wallet(privateKey, rpcProvider);
+
+      let wallet;
+      if (privateKey) wallet = new ethers.Wallet(privateKey, rpcProvider);
 
       this.contract = new ethers.Contract(
         claimContractAddress,
         require("../abi/Claim.json").abi,
-        wallet
+        wallet || rpcProvider
       );
     }
   }

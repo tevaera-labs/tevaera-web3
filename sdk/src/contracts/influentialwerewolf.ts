@@ -12,10 +12,6 @@ import { Network } from "../types";
 export class InfluentialWerewolf {
   readonly contract: ethers.Contract;
   readonly network: Network;
-  readonly web3Provider:
-    | zksync.Web3Provider
-    | ethers.providers.Web3Provider
-    | undefined;
 
   constructor(options: {
     web3Provider?: zksync.Web3Provider | ethers.providers.Web3Provider;
@@ -34,23 +30,22 @@ export class InfluentialWerewolf {
       this.contract = new ethers.Contract(
         influentialWerewolfContractAddress,
         require("../abi/InfluentialWerewolf.json").abi,
-        web3Provider.getSigner()
+        web3Provider.getSigner() || web3Provider
       );
     } else {
-      if (!privateKey) throw new Error("private key is reuired.");
-
       const rpcProvider = getRpcProvider(network);
-      const wallet = new ethers.Wallet(privateKey, rpcProvider);
+
+      let wallet;
+      if (privateKey) wallet = new ethers.Wallet(privateKey, rpcProvider);
 
       this.contract = new ethers.Contract(
         influentialWerewolfContractAddress,
         require("../abi/InfluentialWerewolf.json").abi,
-        wallet
+        wallet || rpcProvider
       );
     }
 
     this.network = network;
-    this.web3Provider = web3Provider;
   }
 
   async getMetadataUri(tokenId: number): Promise<string> {
@@ -96,16 +91,15 @@ export class InfluentialWerewolf {
     let overrides = {
       value: price
     };
+
     // get paymaster overrides if applicable
-    if (this.web3Provider) {
-      overrides = await getPaymasterCustomOverrides({
-        web3Provider: this.web3Provider,
-        network: this.network,
-        overrides,
-        feeToken,
-        isGaslessFlow
-      });
-    }
+    overrides = await getPaymasterCustomOverrides({
+      network: this.network,
+      overrides,
+      feeToken,
+      isGaslessFlow
+    });
+
     const mintTx = await this.contract.mint(overrides);
     await mintTx.wait();
 

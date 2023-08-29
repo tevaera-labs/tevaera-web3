@@ -144,19 +144,12 @@ export const getRpcUrl = (network: Network) => {
 };
 
 export async function getPaymasterCustomOverrides(options: {
-  web3Provider: zksync.Web3Provider | ethers.providers.Web3Provider;
   network: Network;
   overrides?: any;
   feeToken?: string;
   isGaslessFlow?: boolean;
 }): Promise<any> {
-  const {
-    web3Provider,
-    overrides = {},
-    feeToken,
-    isGaslessFlow,
-    network
-  } = options;
+  const { overrides = {}, feeToken, isGaslessFlow, network } = options;
 
   // Let the paymaster flow; don't break anything. Instead, allow the user to pay in ETH and continue.
   try {
@@ -175,31 +168,6 @@ export async function getPaymasterCustomOverrides(options: {
       feeToken !== zksync.utils.L2_ETH_TOKEN_ADDRESS
     ) {
       console.log("[TevaPaymaster] Approval based flow");
-      // create erc20 contract instance
-      const erc20 = new ERC20({
-        web3Provider,
-        network,
-        erc20ContractAddress: feeToken
-      });
-      // get erc20 currency metadata
-      const erc20Decimals = await erc20.getDecimals();
-      const erc20Name = await erc20.getName();
-      const isBtc = erc20Name.toLowerCase().indexOf("btc") > -1;
-
-      // get value equivalent to $5
-      const value = isBtc
-        ? ethers.utils.parseUnits("0.0002", erc20Decimals) // 0.0002 btc ~ 5 USD
-        : ethers.utils.parseUnits("5", erc20Decimals); // 5 dai/usdc/usdt ~ 5 USD
-      const owner = await web3Provider.getSigner().getAddress();
-      const spender = tevaPayMasterContractAddress;
-
-      // check min allowance
-      const allowance = await erc20.getAllowance(owner, spender);
-      const numAllowance = ethers.utils.parseUnits(allowance, erc20Decimals);
-      if (numAllowance.lt(value)) {
-        // approve overrides the previous allowance, set it to the minimum required for this tx
-        await erc20.setAllowance(spender, allowance);
-      }
 
       // add paymaster approval based params
       paymasterParams = zksync.utils.getPaymasterParams(

@@ -12,10 +12,6 @@ import { Network } from "../types";
 export class BalancerDragon {
   readonly contract: ethers.Contract;
   readonly network: Network;
-  readonly web3Provider:
-    | zksync.Web3Provider
-    | ethers.providers.Web3Provider
-    | undefined;
 
   constructor(options: {
     web3Provider?: zksync.Web3Provider | ethers.providers.Web3Provider;
@@ -32,23 +28,22 @@ export class BalancerDragon {
       this.contract = new ethers.Contract(
         balancerDragonContractAddress,
         require("../abi/BalancerDragon.json").abi,
-        web3Provider.getSigner()
+        web3Provider.getSigner() || web3Provider
       );
     } else {
-      if (!privateKey) throw new Error("private key is reuired.");
-
       const rpcProvider = getRpcProvider(network);
-      const wallet = new ethers.Wallet(privateKey, rpcProvider);
+
+      let wallet;
+      if (privateKey) wallet = new ethers.Wallet(privateKey, rpcProvider);
 
       this.contract = new ethers.Contract(
         balancerDragonContractAddress,
         require("../abi/BalancerDragon.json").abi,
-        wallet
+        wallet || rpcProvider
       );
     }
 
     this.network = network;
-    this.web3Provider = web3Provider;
   }
 
   async getMetadataUri(tokenId: number): Promise<string> {
@@ -95,16 +90,15 @@ export class BalancerDragon {
     let overrides = {
       value: price
     };
+
     // get paymaster overrides if applicable
-    if (this.web3Provider) {
-      overrides = await getPaymasterCustomOverrides({
-        web3Provider: this.web3Provider,
-        network: this.network,
-        overrides,
-        feeToken,
-        isGaslessFlow
-      });
-    }
+    overrides = await getPaymasterCustomOverrides({
+      network: this.network,
+      overrides,
+      feeToken,
+      isGaslessFlow
+    });
+
     const mintTx = await this.contract.mint(overrides);
     await mintTx.wait();
 

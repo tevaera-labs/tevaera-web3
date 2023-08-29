@@ -2,12 +2,13 @@
 import * as zksync from "zksync-web3";
 import { BigNumberish, ethers } from "ethers";
 
-import { getRpcProvider } from "../utils";
+import { getPaymasterCustomOverrides, getRpcProvider } from "../utils";
 import { formatUnits, parseUnits } from "ethers/lib/utils";
 import { Network } from "../types";
 
 export class ERC20 {
   readonly contract: ethers.Contract;
+  readonly network: Network;
 
   constructor(options: {
     web3Provider?: zksync.Web3Provider | ethers.providers.Web3Provider;
@@ -27,17 +28,19 @@ export class ERC20 {
         web3Provider.getSigner() || web3Provider
       );
     } else {
-      if (!privateKey) throw new Error("private key is reuired.");
-
       const rpcProvider = getRpcProvider(network);
-      const wallet = new ethers.Wallet(privateKey, rpcProvider);
+
+      let wallet;
+      if (privateKey) wallet = new ethers.Wallet(privateKey, rpcProvider);
 
       this.contract = new ethers.Contract(
         erc20ContractAddress,
         require("../abi/ERC20.json").abi,
-        wallet
+        wallet || rpcProvider
       );
     }
+
+    this.network = network;
   }
 
   async getBalanceOf(address: string): Promise<string> {
@@ -70,10 +73,24 @@ export class ERC20 {
     return formatUnits(allowance, await this.getDecimals());
   }
 
-  async setAllowance(spender: string, value: string): Promise<void> {
+  async setAllowance(
+    spender: string,
+    value: string,
+    feeToken?: string,
+    isGaslessFlow?: boolean
+  ): Promise<void> {
+    // get paymaster overrides if applicable
+    const overrides = await getPaymasterCustomOverrides({
+      network: this.network,
+      overrides: {},
+      feeToken,
+      isGaslessFlow
+    });
+
     await this.contract.approve(
       spender,
-      parseUnits(value, await this.getDecimals())
+      parseUnits(value, await this.getDecimals()),
+      overrides
     );
   }
 }

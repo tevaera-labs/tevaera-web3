@@ -2,12 +2,17 @@
 import { ethers } from "ethers";
 import * as zksync from "zksync-web3";
 
-import { getContractAddresses, getRpcProvider } from "../utils";
+import {
+  getContractAddresses,
+  getPaymasterCustomOverrides,
+  getRpcProvider
+} from "../utils";
 import { formatUnits } from "ethers/lib/utils";
 import { Network } from "../types";
 
 export class KarmaPoint {
   readonly contract: ethers.Contract;
+  readonly network: Network;
 
   constructor(options: {
     web3Provider?: zksync.Web3Provider | ethers.providers.Web3Provider;
@@ -24,20 +29,22 @@ export class KarmaPoint {
       this.contract = new ethers.Contract(
         karmaPointContractAddress,
         require("../abi/KarmaPoint.json").abi,
-        web3Provider.getSigner()
+        web3Provider.getSigner() || web3Provider
       );
     } else {
-      if (!privateKey) throw new Error("private key is reuired.");
-
       const rpcProvider = getRpcProvider(network);
-      const wallet = new ethers.Wallet(privateKey, rpcProvider);
+
+      let wallet;
+      if (privateKey) wallet = new ethers.Wallet(privateKey, rpcProvider);
 
       this.contract = new ethers.Contract(
         karmaPointContractAddress,
         require("../abi/KarmaPoint.json").abi,
-        wallet
+        wallet || rpcProvider
       );
     }
+
+    this.network = network;
   }
 
   async getKpBalance(address: string): Promise<number> {
@@ -65,17 +72,43 @@ export class KarmaPoint {
     return this.contract.boughtKP(wallet);
   }
 
-  async buyKarmaPoints(kpAmount: number): Promise<unknown> {
-    const tx = await this.contract.buy(kpAmount, {
+  async buyKarmaPoints(
+    kpAmount: number,
+    feeToken?: string,
+    isGaslessFlow?: boolean
+  ): Promise<unknown> {
+    let overrides = {
       value: ethers.utils.parseUnits(await this.getKpPrice(kpAmount), 18)
+    };
+
+    // get paymaster overrides if applicable
+    overrides = await getPaymasterCustomOverrides({
+      network: this.network,
+      overrides,
+      feeToken,
+      isGaslessFlow
     });
+
+    const tx = await this.contract.buy(kpAmount, overrides);
     await tx.wait();
 
     return tx;
   }
 
-  async withdrawKarmaPoints(kpAmount: number): Promise<unknown> {
-    const tx = await this.contract.withdraw(kpAmount);
+  async withdrawKarmaPoints(
+    kpAmount: number,
+    feeToken?: string,
+    isGaslessFlow?: boolean
+  ): Promise<unknown> {
+    // get paymaster overrides if applicable
+    const overrides = await getPaymasterCustomOverrides({
+      network: this.network,
+      overrides: {},
+      feeToken,
+      isGaslessFlow
+    });
+
+    const tx = await this.contract.withdraw(kpAmount, overrides);
     await tx.wait();
 
     return tx;

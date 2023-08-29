@@ -12,10 +12,6 @@ import { Network } from "../types";
 export class ONFT {
   readonly contract: ethers.Contract;
   readonly network: Network;
-  readonly web3Provider:
-    | zksync.Web3Provider
-    | ethers.providers.Web3Provider
-    | undefined;
 
   constructor(options: {
     web3Provider?: zksync.Web3Provider | ethers.providers.Web3Provider;
@@ -35,20 +31,19 @@ export class ONFT {
         web3Provider.getSigner() || web3Provider
       );
     } else {
-      if (!privateKey) throw new Error("private key is reuired.");
-
       const rpcProvider = getRpcProvider(network);
-      const wallet = new ethers.Wallet(privateKey, rpcProvider);
+
+      let wallet;
+      if (privateKey) wallet = new ethers.Wallet(privateKey, rpcProvider);
 
       this.contract = new ethers.Contract(
         onftContractAddress,
         require("../abi/ONFT.json").abi,
-        wallet
+        wallet || rpcProvider
       );
     }
 
     this.network = network;
-    this.web3Provider = web3Provider;
   }
 
   async getBalanceOf(address: string): Promise<number> {
@@ -146,16 +141,14 @@ export class ONFT {
     let overrides = {
       value: utils.parseEther(fee)
     };
+
     // get paymaster overrides if applicable
-    if (this.web3Provider) {
-      overrides = await getPaymasterCustomOverrides({
-        web3Provider: this.web3Provider,
-        network: this.network,
-        overrides,
-        feeToken,
-        isGaslessFlow
-      });
-    }
+    overrides = await getPaymasterCustomOverrides({
+      network: this.network,
+      overrides,
+      feeToken,
+      isGaslessFlow
+    });
 
     const tx = await this.contract.sendFrom(
       wallet,

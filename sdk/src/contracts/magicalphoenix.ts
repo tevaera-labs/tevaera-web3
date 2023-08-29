@@ -2,11 +2,16 @@
 import * as zksync from "zksync-web3";
 import { ethers } from "ethers";
 
-import { getContractAddresses, getRpcProvider } from "../utils";
+import {
+  getContractAddresses,
+  getPaymasterCustomOverrides,
+  getRpcProvider
+} from "../utils";
 import { Network } from "../types";
 
 export class MagicalPhoenix {
   readonly contract: ethers.Contract;
+  readonly network: Network;
 
   constructor(options: {
     web3Provider?: zksync.Web3Provider | ethers.providers.Web3Provider;
@@ -23,20 +28,22 @@ export class MagicalPhoenix {
       this.contract = new ethers.Contract(
         magicalPhoenixContractAddress,
         require("../abi/MagicalPhoenix.json").abi,
-        web3Provider.getSigner()
+        web3Provider.getSigner() || web3Provider
       );
     } else {
-      if (!privateKey) throw new Error("private key is reuired.");
-
       const rpcProvider = getRpcProvider(network);
-      const wallet = new ethers.Wallet(privateKey, rpcProvider);
+
+      let wallet;
+      if (privateKey) wallet = new ethers.Wallet(privateKey, rpcProvider);
 
       this.contract = new ethers.Contract(
         magicalPhoenixContractAddress,
         require("../abi/MagicalPhoenix.json").abi,
-        wallet
+        wallet || rpcProvider
       );
     }
+
+    this.network = network;
   }
 
   async getMetadataUri(tokenId: number): Promise<string> {
@@ -68,8 +75,19 @@ export class MagicalPhoenix {
     return tokenIds;
   }
 
-  async mintMagicalPhoenix(): Promise<unknown> {
-    const mintTx = await this.contract.mint();
+  async mintMagicalPhoenix(
+    feeToken?: string,
+    isGaslessFlow?: boolean
+  ): Promise<unknown> {
+    // get paymaster overrides if applicable
+    const overrides = await getPaymasterCustomOverrides({
+      network: this.network,
+      overrides: {},
+      feeToken,
+      isGaslessFlow
+    });
+
+    const mintTx = await this.contract.mint(overrides);
     await mintTx.wait();
 
     return mintTx;
