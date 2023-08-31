@@ -1,7 +1,6 @@
 import { ethers } from "ethers";
 import * as zksync from "zksync-web3";
 
-import { ERC20 } from "./contracts/erc20";
 import { Network } from "./types";
 
 // rpc urls
@@ -11,12 +10,36 @@ export const ZKSYNC_ERA_GOERLI_RPC_URL = "https://zksync2-testnet.zksync.dev";
 export const ARBITRUM_ONE_RPC_URL = "https://arb1.arbitrum.io/rpc";
 export const ARBITRUM_GOERLI_RPC_URL = "https://goerli-rollup.arbitrum.io/rpc";
 
-export const LINEA_RPC_URL = "https://linea-mainnet.infura.io/v3";
+export const LINEA_RPC_URL = "https://rpc.linea.build";
 export const LINEA_GOERLI_RPC_URL = "https://rpc.goerli.linea.build";
 
 // tevaera contracts
 export const getContractAddresses = (network: Network) => {
   switch (network) {
+    case Network.ZksyncEra:
+      return {
+        citizenIdContractAddress: "0xd29Aa7bdD3cbb32557973daD995A3219D307721f",
+        karmaPointContractAddress: "0x9Fc20170d613766831F164f1831F4607Ae54ff2D",
+        claimContractAddress: "0x1EB7bcab5EdF75b5E02c9A72D3287E322EbaEfdB",
+        reformistSphinxContractAddress:
+          "0x50B2b7092bCC15fbB8ac74fE9796Cf24602897Ad",
+        magicalPhoenixContractAddress:
+          "0x0969529a8ea41b47009eb2a590fe71d7942e4f5a",
+        nomadicYetiContractAddress:
+          "0x955AE6B7005eFA49F23cCFcb385cdcf542C06276",
+        influentialWerewolfContractAddress:
+          "0x5060f2F97E7053D1147583B71d190E1A420C42fd",
+        innovativeUnicornContractAddress:
+          "0xcAF741840240E6aB1a010D13368C2d15774487D3",
+        simplifierKrakenContractAddress:
+          "0x44DB5de936f2254fB2988e419D01E9A83DbbAbd2",
+        balancerDragonContractAddress:
+          "0x17D9B864AF82c6B83fa6330D65BFE61f3e944Fff",
+        guardianBundlerContractAddress:
+          "0x5dE117628B5062F56f37d8fB6603524C7189D892",
+        tevaPayMasterContractAddress:
+          "0x66ea743B004992f97a2e9fc187A607077f21781C"
+      };
     case Network.ZksyncEraGoerli:
       return {
         citizenIdContractAddress: "0x52f6C2822e68FC05E565AD13F596d8dBc40166f9",
@@ -39,7 +62,20 @@ export const getContractAddresses = (network: Network) => {
         guardianBundlerContractAddress:
           "0x6dC0590dF111B68c5273B3d1351d01936321dB93",
         tevaPayMasterContractAddress:
-          "0x2F9b95557646146Ec7dBa6ff784ddC79244b14DC"
+          "0x5b9F16cFAF2a3F021ff6B9aD6794FCC3fDB4FeEe"
+      };
+    case Network.ArbitrumOne:
+      return {
+        nomadicYetiContractAddress:
+          "0x8cFD35c04F44D33501d2590ab4FCB45009a1297B",
+        influentialWerewolfContractAddress:
+          "0x8F657B0902eDD9Fb10e7CdDaa8cFB4228942C788",
+        innovativeUnicornContractAddress:
+          "0x60E880FAa2987f7426aD51E097c08D3266801f52",
+        simplifierKrakenContractAddress:
+          "0xC9F831D329515903CE78e03c6bB7eFB29d645596",
+        balancerDragonContractAddress:
+          "0x6e4bbF3f5e2B33f14FcF40d838e8a0391A32fdD4"
       };
     case Network.ArbitrumGoerli:
       return {
@@ -54,6 +90,19 @@ export const getContractAddresses = (network: Network) => {
         balancerDragonContractAddress:
           "0x6BB26ecc0Db1E91979152406311215f8B0cA2e1c"
       };
+    case Network.Linea:
+      return {
+        nomadicYetiContractAddress:
+          "0x8cFD35c04F44D33501d2590ab4FCB45009a1297B",
+        influentialWerewolfContractAddress:
+          "0x8F657B0902eDD9Fb10e7CdDaa8cFB4228942C788",
+        innovativeUnicornContractAddress:
+          "0x60E880FAa2987f7426aD51E097c08D3266801f52",
+        simplifierKrakenContractAddress:
+          "0xC9F831D329515903CE78e03c6bB7eFB29d645596",
+        balancerDragonContractAddress:
+          "0x6e4bbF3f5e2B33f14FcF40d838e8a0391A32fdD4"
+      };
     case Network.LineaGoerli:
       return {
         nomadicYetiContractAddress:
@@ -67,10 +116,6 @@ export const getContractAddresses = (network: Network) => {
         balancerDragonContractAddress:
           "0xd4f548595E6fE4F9b2B0934146A721E3cad37157"
       };
-    case Network.ArbitrumOne:
-      throw new Error("Not implemented!");
-    case Network.Linea:
-      throw new Error("Not implemented!");
 
     default:
       throw new Error("invalid network");

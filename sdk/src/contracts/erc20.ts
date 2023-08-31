@@ -78,7 +78,7 @@ export class ERC20 {
     value: string,
     feeToken?: string,
     isGaslessFlow?: boolean
-  ): Promise<void> {
+  ): Promise<unknown> {
     // get paymaster overrides if applicable
     const overrides = await getPaymasterCustomOverrides({
       network: this.network,
@@ -87,7 +87,7 @@ export class ERC20 {
       isGaslessFlow
     });
 
-    await this.contract.approve(
+    return this.contract.approve(
       spender,
       parseUnits(value, await this.getDecimals()),
       overrides
