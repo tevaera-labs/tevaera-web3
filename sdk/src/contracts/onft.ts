@@ -105,11 +105,13 @@ export class ONFT {
   async getCrosschainFeeEstimation(
     dest: Network,
     wallet: string,
-    tokenId: BigNumberish
+    tokenId: BigNumberish,
+    minGas?: string
   ): Promise<unknown> {
+    const minGasWei = minGas || "350000";
     const adapterParams = ethers.utils.solidityPack(
       ["uint16", "uint256"],
-      ["1", "350000"] // package type (1 = send), min gas = 350000 wei
+      ["1", minGasWei] // package type (1 = send), min gas = 350000 wei
     );
     const destChainId = getLzChainId(dest);
     const fee = await this.contract.estimateSendFee(
@@ -129,11 +131,13 @@ export class ONFT {
     refundAddress: string,
     fee: string,
     feeToken?: string,
-    isGaslessFlow?: boolean
+    isGaslessFlow?: boolean,
+    minGas?: string
   ): Promise<unknown> {
+    const minGasWei = minGas || "350000";
     const adapterParams = ethers.utils.solidityPack(
       ["uint16", "uint256"],
-      ["1", "350000"] // package type (1 = send), min gas = 350000 wei
+      ["1", minGasWei] // package type (1 = send), min gas = 350000 wei
     );
     const destChainId = getLzChainId(dest);
 

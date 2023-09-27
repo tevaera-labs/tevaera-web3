@@ -42,8 +42,8 @@ export const getContractAddresses = (network: Network) => {
       };
     case Network.ZksyncEraGoerli:
       return {
-        citizenIdContractAddress: "0x52f6C2822e68FC05E565AD13F596d8dBc40166f9",
-        karmaPointContractAddress: "0xD9471ac50B1015275911C9fDfD2Ba734374415b1",
+        citizenIdContractAddress: "0x178f6217C51B797cA9aB04FC2cE68775C032678e",
+        karmaPointContractAddress: "0x611B67222df44A28B5438ff39FE8b4bE25bE6Ad2",
         claimContractAddress: "0x3F248D326d8eF82f88865afe2cbf5277a073a880",
         reformistSphinxContractAddress:
           "0x6fAa4B4b6b0745CFe7405eE04Ca8D28DA67779A7",
@@ -62,7 +62,11 @@ export const getContractAddresses = (network: Network) => {
         guardianBundlerContractAddress:
           "0x6dC0590dF111B68c5273B3d1351d01936321dB93",
         tevaPayMasterContractAddress:
-          "0x5b9F16cFAF2a3F021ff6B9aD6794FCC3fDB4FeEe"
+          "0x5b9F16cFAF2a3F021ff6B9aD6794FCC3fDB4FeEe",
+        multicallContractAddress: "0xDC3FBA29a533c484069d12E4e6061A7C9f41d841",
+        sessionAccountFactoryAddress:
+          "0x6B5A6fdcAf54cF0487372753618C723E9DCAE66f",
+        tevaTrustedSignerAddress: "0x9910FB35F401eFa865852b53285e678E21753e5e"
       };
     case Network.ArbitrumOne:
       return {
