@@ -75,7 +75,7 @@ export class SessionAccount {
   }
 
   async createSessionAccount(): Promise<string> {
-    const ownerAddress = this.sessionAccountFactory.signer.getAddress();
+    const ownerAddress = await this.sessionAccountFactory.signer.getAddress();
     // generate random salt to make sure unique address is returned
     const randomBytesLength = 32; // for a 256-bit value, change this to your desired length
     const randomBytes = ethers.utils.randomBytes(randomBytesLength);
@@ -99,5 +99,44 @@ export class SessionAccount {
 
     // return the session account address
     return sessionAccountAddress;
+  }
+
+  async deleteSession(sessionAccount: string): Promise<unknown> {
+    // create an instance of session account
+    const account = new ethers.Contract(
+      sessionAccount,
+      require("../abi/SessionAccount.json").abi,
+      this.signerOrWallet
+    );
+
+    // get trusted teva signer
+    const { tevaTrustedSignerAddress } = getContractAddresses(this.network);
+
+    const tx = await account.deleteSession(tevaTrustedSignerAddress);
+
+    return tx;
+  }
+
+  async getActiveSession(sessionAccount: string): Promise<unknown> {
+    // create an instance of session account
+    const account = new ethers.Contract(
+      sessionAccount,
+      require("../abi/SessionAccount.json").abi,
+      this.signerOrWallet
+    );
+
+    // get trusted teva signer
+    const { tevaTrustedSignerAddress } = getContractAddresses(this.network);
+
+    const session = await account.sessions(tevaTrustedSignerAddress);
+    const { expirationTime } = session || {};
+
+    const currentTimestampInSeconds = Math.floor(Date.now() / 1000); // Convert milliseconds to seconds
+
+    if (expirationTime > currentTimestampInSeconds) {
+      return expirationTime;
+    } else {
+      return undefined;
+    }
   }
 }

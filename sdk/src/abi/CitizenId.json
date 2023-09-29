@@ -100,25 +100,6 @@
       "inputs": [
         {
           "indexed": true,
-          "internalType": "uint256",
-          "name": "tokenId",
-          "type": "uint256"
-        },
-        {
-          "indexed": false,
-          "internalType": "uint256",
-          "name": "repScore",
-          "type": "uint256"
-        }
-      ],
-      "name": "RepScoreUpdated",
-      "type": "event"
-    },
-    {
-      "anonymous": false,
-      "inputs": [
-        {
-          "indexed": true,
           "internalType": "address",
           "name": "from",
           "type": "address"
@@ -261,6 +242,19 @@
       "type": "function"
     },
     {
+      "inputs": [],
+      "name": "contractURI",
+      "outputs": [
+        {
+          "internalType": "string",
+          "name": "",
+          "type": "string"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
       "inputs": [
         {
           "internalType": "uint256",
@@ -324,6 +318,19 @@
     {
       "inputs": [],
       "name": "mintCitizenId",
+      "outputs": [],
+      "stateMutability": "payable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "recipient",
+          "type": "address"
+        }
+      ],
+      "name": "mintForAddress",
       "outputs": [],
       "stateMutability": "payable",
       "type": "function"
@@ -486,11 +493,24 @@
       "inputs": [
         {
           "internalType": "string",
-          "name": "_tokenImageUri",
+          "name": "_uri",
           "type": "string"
         }
       ],
-      "name": "setTokenImageUri",
+      "name": "setContractURI",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "string",
+          "name": "_tokenBaseUri",
+          "type": "string"
+        }
+      ],
+      "name": "setTokenBaseUri",
       "outputs": [],
       "stateMutability": "nonpayable",
       "type": "function"
@@ -711,17 +731,12 @@
     {
       "inputs": [
         {
-          "internalType": "uint256[]",
-          "name": "_tokenIds",
-          "type": "uint256[]"
-        },
-        {
-          "internalType": "uint256[]",
-          "name": "_reps",
-          "type": "uint256[]"
+          "internalType": "address",
+          "name": "_repAdminAddress",
+          "type": "address"
         }
       ],
-      "name": "updateRep",
+      "name": "updateRepAdminAddress",
       "outputs": [],
       "stateMutability": "nonpayable",
       "type": "function"
@@ -737,6 +752,38 @@
       "name": "updateSafeAddress",
       "outputs": [],
       "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address[]",
+          "name": "addresses",
+          "type": "address[]"
+        }
+      ],
+      "name": "whitelistCallers",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "name": "whitelistedCallers",
+      "outputs": [
+        {
+          "internalType": "bool",
+          "name": "",
+          "type": "bool"
+        }
+      ],
+      "stateMutability": "view",
       "type": "function"
     },
     {
