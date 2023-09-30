@@ -38,7 +38,11 @@ export const getContractAddresses = (network: Network) => {
         guardianBundlerContractAddress:
           "0x5dE117628B5062F56f37d8fB6603524C7189D892",
         tevaPayMasterContractAddress:
-          "0x66ea743B004992f97a2e9fc187A607077f21781C"
+          "0x66ea743B004992f97a2e9fc187A607077f21781C",
+        multicallContractAddress: "0xA81898C1BC737bfce6955aad572e7658f1be521e",
+        sessionAccountFactoryAddress:
+          "0xe2b769023CF14d50ffE3Be72bd4F368cD2Ca160C",
+        tevaTrustedSignerAddress: "0x1b9eBb8F3c335dA62235Fe783cF5663979Eb7B04"
       };
     case Network.ZksyncEraGoerli:
       return {
