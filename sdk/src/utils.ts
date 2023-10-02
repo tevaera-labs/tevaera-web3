@@ -41,7 +41,7 @@ export const getContractAddresses = (network: Network) => {
           "0x66ea743B004992f97a2e9fc187A607077f21781C",
         multicallContractAddress: "0xA81898C1BC737bfce6955aad572e7658f1be521e",
         sessionAccountFactoryAddress:
-          "0xe2b769023CF14d50ffE3Be72bd4F368cD2Ca160C",
+          "0x4a3F7085f275089e51399DC6685B7855Ce97C1Be",
         tevaTrustedSignerAddress: "0x1b9eBb8F3c335dA62235Fe783cF5663979Eb7B04"
       };
     case Network.ZksyncEraGoerli:
