@@ -50,7 +50,7 @@ export const getContractAddresses = (network: Network) => {
         karmaPointContractAddress: "0x611B67222df44A28B5438ff39FE8b4bE25bE6Ad2",
         claimContractAddress: "0x3F248D326d8eF82f88865afe2cbf5277a073a880",
         reformistSphinxContractAddress:
-          "0x6fAa4B4b6b0745CFe7405eE04Ca8D28DA67779A7",
+          "0x77371Ab0e5695B2203c4072807637290241e4dB7",
         magicalPhoenixContractAddress:
           "0x9bcb9074e760392907fcadDd18dE3bB48fEdFB5F",
         nomadicYetiContractAddress:
@@ -69,7 +69,7 @@ export const getContractAddresses = (network: Network) => {
           "0x5b9F16cFAF2a3F021ff6B9aD6794FCC3fDB4FeEe",
         multicallContractAddress: "0xDC3FBA29a533c484069d12E4e6061A7C9f41d841",
         sessionAccountFactoryAddress:
-          "0xC91Fad1D213675aa470E1Cc87F2BE9b629044e61",
+          "0x7D8E3fcB7b376CaC10C863523C349ce139BAdadf",
         tevaTrustedSignerAddress: "0x9910FB35F401eFa865852b53285e678E21753e5e"
       };
     case Network.ArbitrumOne:
@@ -179,7 +179,7 @@ export const getRpcProvider = (network: Network) => {
 export const getRpcUrl = (network: Network) => {
   switch (network) {
     case Network.ZksyncEra:
-      return ZKSYNC_ERA_GOERLI_RPC_URL;
+      return ZKSYNC_ERA_RPC_URL;
     case Network.ZksyncEraGoerli:
       return ZKSYNC_ERA_GOERLI_RPC_URL;
     case Network.ArbitrumOne:
