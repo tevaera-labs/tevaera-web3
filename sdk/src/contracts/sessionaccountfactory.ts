@@ -5,7 +5,7 @@ import { ethers } from "ethers";
 import { getContractAddresses, getRpcProvider } from "../utils";
 import { Network } from "../types";
 
-export class SessionAccount {
+export class SessionAccountFactory {
   readonly network: Network;
   readonly sessionAccountFactory: ethers.Contract;
   readonly signerOrWallet: any;
@@ -50,7 +50,6 @@ export class SessionAccount {
 
   async createSession(
     sessionAccount: string,
-    trustedAddresses: string[],
     duration?: number
   ): Promise<unknown> {
     const secondsUntilEndTime = duration || 7200; // default to 2 hours
@@ -67,8 +66,7 @@ export class SessionAccount {
 
     const tx = await account.createSession(
       tevaTrustedSignerAddress,
-      secondsUntilEndTime,
-      trustedAddresses
+      secondsUntilEndTime
     );
 
     return tx;
@@ -138,5 +136,16 @@ export class SessionAccount {
     } else {
       return undefined;
     }
+  }
+
+  async getSessionAccount(sessionAccount: string): Promise<unknown> {
+    // create an instance of session account
+    const account = new ethers.Contract(
+      sessionAccount,
+      require("../abi/SessionAccount.json").abi,
+      this.signerOrWallet
+    );
+
+    return account;
   }
 }

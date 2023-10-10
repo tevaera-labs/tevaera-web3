@@ -41,7 +41,7 @@ export const getContractAddresses = (network: Network) => {
           "0x66ea743B004992f97a2e9fc187A607077f21781C",
         multicallContractAddress: "0xA81898C1BC737bfce6955aad572e7658f1be521e",
         sessionAccountFactoryAddress:
-          "0x4a3F7085f275089e51399DC6685B7855Ce97C1Be",
+          "0xe78616f6CF87ffc3F33741BB731016A897f0cA88",
         tevaTrustedSignerAddress: "0x1b9eBb8F3c335dA62235Fe783cF5663979Eb7B04"
       };
     case Network.ZksyncEraGoerli:
@@ -69,7 +69,7 @@ export const getContractAddresses = (network: Network) => {
           "0x5b9F16cFAF2a3F021ff6B9aD6794FCC3fDB4FeEe",
         multicallContractAddress: "0xDC3FBA29a533c484069d12E4e6061A7C9f41d841",
         sessionAccountFactoryAddress:
-          "0x7D8E3fcB7b376CaC10C863523C349ce139BAdadf",
+          "0x6C8e495f245feA71b8d15f6A6d217Bd930D5BA37",
         tevaTrustedSignerAddress: "0x9910FB35F401eFa865852b53285e678E21753e5e"
       };
     case Network.ArbitrumOne:
