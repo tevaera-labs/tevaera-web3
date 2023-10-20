@@ -13,6 +13,12 @@ export const ARBITRUM_GOERLI_RPC_URL = "https://goerli-rollup.arbitrum.io/rpc";
 export const LINEA_RPC_URL = "https://rpc.linea.build";
 export const LINEA_GOERLI_RPC_URL = "https://rpc.goerli.linea.build";
 
+export const BASE_RPC_URL = "https://mainnet.base.org";
+export const BASE_GOERLI_RPC_URL = "https://goerli.base.org";
+
+export const SCROLL_RPC_URL = "https://rpc.scroll.io";
+export const SCROLL_SEPOLIA_RPC_URL = "	https://sepolia-rpc.scroll.io";
+
 // tevaera contracts
 export const getContractAddresses = (network: Network) => {
   switch (network) {
@@ -88,15 +94,15 @@ export const getContractAddresses = (network: Network) => {
     case Network.ArbitrumGoerli:
       return {
         nomadicYetiContractAddress:
-          "0x1f2e4C36f4a494eddF797f8127a16B1Cac03c246",
+          "0x2a7ffFAC2D1f42a9dde8Da3D93e6f5Dc60F21f8C",
         influentialWerewolfContractAddress:
-          "0xE43EC1ce702cE29f17901a3444BbFeDB82a59Cde",
+          "0xE6f256d2C346B4a1420304EC34E93905d6C4c064",
         innovativeUnicornContractAddress:
-          "0xc78cB995aF1169Ba76185f37779aC455e76eCF30",
+          "0x8b07eFc6b2b052FAc1A1dCbf70be03a460bCc975",
         simplifierKrakenContractAddress:
-          "0xE120D9A60613DAFc8f3645eFca2587245799696a",
+          "0x927Ff9D72237B5aAc8123EFFc4D071104C9ab88B",
         balancerDragonContractAddress:
-          "0x6BB26ecc0Db1E91979152406311215f8B0cA2e1c"
+          "0xBF00f9510C6224f9C097F352DBa61076f9b6251f"
       };
     case Network.Linea:
       return {
@@ -114,15 +120,67 @@ export const getContractAddresses = (network: Network) => {
     case Network.LineaGoerli:
       return {
         nomadicYetiContractAddress:
-          "0x4F256A971bB10bec6Fef854C4b5D0D3c6C154734",
+          "0xe074Da15A835eF5c6A51691A88386d2e03098e55",
         influentialWerewolfContractAddress:
-          "0x7A09C1C4081acE2836a1724a3262C6d7D3e776C8",
+          "0xc290215fD158B5d52679DA370c18703Eb37903C3",
         innovativeUnicornContractAddress:
-          "0x00711d691d20168629ED5D20F484C151da9a4D24",
+          "0xb71e408766294dEAd1ffD905290931cD09bF24f0",
+        simplifierKrakenContractAddress:
+          "0x9a9E5013E8ba662E62d4D85c6401aEa7a17D676E",
+        balancerDragonContractAddress:
+          "0xfA05884C675f1d79302F62071EbEA32158744908"
+      };
+    case Network.Base:
+      return {
+        nomadicYetiContractAddress:
+          "0x8cFD35c04F44D33501d2590ab4FCB45009a1297B",
+        influentialWerewolfContractAddress:
+          "0x60E880FAa2987f7426aD51E097c08D3266801f52",
+        innovativeUnicornContractAddress:
+          "0x8F657B0902eDD9Fb10e7CdDaa8cFB4228942C788",
+        simplifierKrakenContractAddress:
+          "0xC9F831D329515903CE78e03c6bB7eFB29d645596",
+        balancerDragonContractAddress:
+          "0x6e4bbF3f5e2B33f14FcF40d838e8a0391A32fdD4"
+      };
+    case Network.BaseGoerli:
+      return {
+        nomadicYetiContractAddress:
+          "0x06C2d045cf7327Ee9462D7bCF6e19C444C30e8B1",
+        influentialWerewolfContractAddress:
+          "0xebD6f3CF2a13139780Ee55B22bCf8F99559F64ea",
+        innovativeUnicornContractAddress:
+          "0x2d837B1892CE7a61af6DE4d58899762CdF4417Eb",
+        simplifierKrakenContractAddress:
+          "0xf396D14A28A9Bb614B8e7C17D87a8165Bb481712",
+        balancerDragonContractAddress:
+          "0x06738a1919429FD542C52C7BE821Da93811221EB"
+      };
+    case Network.Scroll:
+      return {
+        nomadicYetiContractAddress:
+          "0x8cFD35c04F44D33501d2590ab4FCB45009a1297B",
+        influentialWerewolfContractAddress:
+          "0x8F657B0902eDD9Fb10e7CdDaa8cFB4228942C788",
+        innovativeUnicornContractAddress:
+          "0x60E880FAa2987f7426aD51E097c08D3266801f52",
+        simplifierKrakenContractAddress:
+          "0xC9F831D329515903CE78e03c6bB7eFB29d645596",
+        balancerDragonContractAddress:
+          "0x6e4bbF3f5e2B33f14FcF40d838e8a0391A32fdD4"
+      };
+    case Network.ScrollSepolia:
+      return {
+        nomadicYetiContractAddress:
+          "0x1b5bAeC0B39A946c61BeF6Ce59bd7A3B16a6984f",
+        influentialWerewolfContractAddress:
+          "0x4F256A971bB10bec6Fef854C4b5D0D3c6C154734",
+        innovativeUnicornContractAddress:
+          "0xDe5E097d679543f97f972c168f30b910ee2a965a",
         simplifierKrakenContractAddress:
           "0xDaad9f1c847dEdd1B54C037Ed5F63FD392c68cd0",
         balancerDragonContractAddress:
-          "0xd4f548595E6fE4F9b2B0934146A721E3cad37157"
+          "0x1620e83cB3EB06113db06A5583249a388925c01C"
       };
 
     default:
@@ -150,6 +208,14 @@ export const getLzChainId = (network: Network) => {
       return 183;
     case Network.LineaGoerli:
       return 10157;
+    case Network.Base:
+      return 184;
+    case Network.BaseGoerli:
+      return 10160;
+    case Network.Scroll:
+      return 214;
+    case Network.ScrollSepolia:
+      return 10214;
 
     default:
       throw new Error("invalid network");
@@ -170,6 +236,14 @@ export const getRpcProvider = (network: Network) => {
       return new ethers.providers.JsonRpcProvider(LINEA_RPC_URL);
     case Network.LineaGoerli:
       return new ethers.providers.JsonRpcProvider(LINEA_GOERLI_RPC_URL);
+    case Network.Base:
+      return new ethers.providers.JsonRpcProvider(BASE_RPC_URL);
+    case Network.BaseGoerli:
+      return new ethers.providers.JsonRpcProvider(BASE_GOERLI_RPC_URL);
+    case Network.Scroll:
+      return new ethers.providers.JsonRpcProvider(SCROLL_RPC_URL);
+    case Network.ScrollSepolia:
+      return new ethers.providers.JsonRpcProvider(SCROLL_SEPOLIA_RPC_URL);
 
     default:
       throw new Error("invalid network");
@@ -190,6 +264,14 @@ export const getRpcUrl = (network: Network) => {
       return LINEA_RPC_URL;
     case Network.LineaGoerli:
       return LINEA_GOERLI_RPC_URL;
+    case Network.Base:
+      return BASE_RPC_URL;
+    case Network.BaseGoerli:
+      return BASE_GOERLI_RPC_URL;
+    case Network.Scroll:
+      return SCROLL_RPC_URL;
+    case Network.ScrollSepolia:
+      return SCROLL_SEPOLIA_RPC_URL;
 
     default:
       throw new Error("invalid network");
