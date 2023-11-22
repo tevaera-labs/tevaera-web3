@@ -1,5 +1,5 @@
 /* import dependencies */
-import { ethers } from "ethers";
+import { BigNumber, BigNumberish, ethers } from "ethers";
 import * as zksync from "zksync-web3";
 
 import {
@@ -96,6 +96,43 @@ export class Multicall {
     }
 
     this.network = network;
+  }
+
+  async Aggregate(
+    targets: string[],
+    callDatas: string[],
+    values: BigNumberish[],
+    feeToken?: string,
+    isGaslessFlow?: boolean
+  ): Promise<void> {
+    let totalValue = BigNumber.from("0");
+    // sum up all values
+    for (let index = 0; index < values.length; index += 1) {
+      const value = values[index];
+      totalValue = totalValue.add(value);
+    }
+
+    let overrides = {
+      value: totalValue // Total value to send
+    };
+
+    // get paymaster overrides if applicable
+    overrides = await getPaymasterCustomOverrides({
+      network: this.network,
+      overrides,
+      feeToken,
+      isGaslessFlow
+    });
+
+    // muticall
+    const tx = await this.multicall.aggregatePayable(
+      targets,
+      callDatas,
+      values,
+      overrides
+    );
+
+    return tx;
   }
 
   async MintTevaBundle(
