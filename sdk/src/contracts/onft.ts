@@ -5,7 +5,7 @@ import { BigNumber, BigNumberish, ethers, utils } from "ethers";
 import {
   getLzChainId,
   getPaymasterCustomOverrides,
-  getRpcProvider
+  getRpcProvider,
 } from "../utils";
 import { Network } from "../types";
 
@@ -44,6 +44,14 @@ export class ONFT {
     }
 
     this.network = network;
+  }
+
+  async getLzRemoteAddress(network: Network): Promise<string> {
+    const address = await this.contract.getTrustedRemoteAddress(
+      getLzChainId(network)
+    );
+
+    return address;
   }
 
   async getBalanceOf(address: string): Promise<number> {
@@ -96,7 +104,7 @@ export class ONFT {
       receiver,
       royaltyAmount: royaltyAmount
         ? Number(ethers.utils.formatUnits(royaltyAmount, 18)) // Assuming it's ETH
-        : 0
+        : 0,
     };
   }
 
@@ -143,7 +151,7 @@ export class ONFT {
 
     // prepare overrides
     let overrides = {
-      value: utils.parseEther(fee)
+      value: utils.parseEther(fee),
     };
 
     // get paymaster overrides if applicable
@@ -151,7 +159,7 @@ export class ONFT {
       network: this.network,
       overrides,
       feeToken,
-      isGaslessFlow
+      isGaslessFlow,
     });
 
     const tx = await this.contract.sendFrom(
