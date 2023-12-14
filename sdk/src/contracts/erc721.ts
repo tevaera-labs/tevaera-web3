@@ -49,6 +49,12 @@ export class ERC721 {
     return balance;
   }
 
+  async getMetadataUri(tokenId: number): Promise<string> {
+    const uri = await this.contract.tokenURI(tokenId);
+
+    return uri;
+  }
+
   async getName(): Promise<string> {
     const name = await this.contract.name();
     return name;
@@ -57,6 +63,17 @@ export class ERC721 {
   async getSymbol(): Promise<string> {
     const symbol = await this.contract.symbol();
     return symbol;
+  }
+
+  async getTokensByWallet(address: string): Promise<number[]> {
+    const noOfTokens = await this.contract.balanceOf(address);
+    const tokenIds: number[] = [];
+    for (let index = 0; index < noOfTokens; index++) {
+      const tokenId = await this.contract.tokenOfOwnerByIndex(address, index);
+      tokenIds.push(tokenId);
+    }
+
+    return tokenIds;
   }
 
   async getOwnerOf(tokenId: string): Promise<string> {
