@@ -222,28 +222,22 @@ export const getLzChainId = (network: Network) => {
   }
 };
 
-export const getRpcProvider = (network: Network) => {
+export const getRpcProvider = (network: Network, customRpcUrl?: string) => {
+  const rpcUrl = customRpcUrl || getRpcUrl(network);
+
   switch (network) {
     case Network.ZksyncEra:
-      return new zksync.Provider(ZKSYNC_ERA_RPC_URL);
     case Network.ZksyncEraGoerli:
-      return new zksync.Provider(ZKSYNC_ERA_GOERLI_RPC_URL);
+      return new zksync.Provider(rpcUrl);
     case Network.ArbitrumOne:
-      return new ethers.providers.JsonRpcProvider(ARBITRUM_ONE_RPC_URL);
     case Network.ArbitrumGoerli:
-      return new ethers.providers.JsonRpcProvider(ARBITRUM_GOERLI_RPC_URL);
     case Network.Linea:
-      return new ethers.providers.JsonRpcProvider(LINEA_RPC_URL);
     case Network.LineaGoerli:
-      return new ethers.providers.JsonRpcProvider(LINEA_GOERLI_RPC_URL);
     case Network.Base:
-      return new ethers.providers.JsonRpcProvider(BASE_RPC_URL);
     case Network.BaseGoerli:
-      return new ethers.providers.JsonRpcProvider(BASE_GOERLI_RPC_URL);
     case Network.Scroll:
-      return new ethers.providers.JsonRpcProvider(SCROLL_RPC_URL);
     case Network.ScrollSepolia:
-      return new ethers.providers.JsonRpcProvider(SCROLL_SEPOLIA_RPC_URL);
+      return new ethers.providers.JsonRpcProvider(rpcUrl);
 
     default:
       throw new Error("invalid network");

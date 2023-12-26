@@ -15,8 +15,9 @@ export class ERC721 {
     network: Network;
     erc721ContractAddress: string;
     privateKey?: string;
+    customRpcUrl?: string;
   }) {
-    const { web3Provider, network, erc721ContractAddress, privateKey } =
+    const { web3Provider, network, erc721ContractAddress, privateKey, customRpcUrl } =
       options;
     if (!network) throw new Error("network is reuired.");
     if (!erc721ContractAddress)
@@ -29,7 +30,7 @@ export class ERC721 {
         web3Provider
       );
     } else {
-      const rpcProvider = getRpcProvider(network);
+      const rpcProvider = getRpcProvider(network, customRpcUrl);
 
       let wallet;
       if (privateKey) wallet = new ethers.Wallet(privateKey, rpcProvider);

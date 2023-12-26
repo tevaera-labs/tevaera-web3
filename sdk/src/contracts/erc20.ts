@@ -15,8 +15,9 @@ export class ERC20 {
     network: Network;
     erc20ContractAddress: string;
     privateKey?: string;
+    customRpcUrl?: string;
   }) {
-    const { web3Provider, network, erc20ContractAddress, privateKey } = options;
+    const { web3Provider, network, erc20ContractAddress, privateKey, customRpcUrl } = options;
     if (!network) throw new Error("network is reuired.");
     if (!erc20ContractAddress)
       throw new Error("erc20ContractAddress is reuired.");
@@ -28,7 +29,7 @@ export class ERC20 {
         web3Provider.getSigner() || web3Provider
       );
     } else {
-      const rpcProvider = getRpcProvider(network);
+      const rpcProvider = getRpcProvider(network, customRpcUrl);
 
       let wallet;
       if (privateKey) wallet = new ethers.Wallet(privateKey, rpcProvider);

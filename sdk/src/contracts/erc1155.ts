@@ -14,8 +14,9 @@ export class ERC1155 {
     network: Network;
     erc1155ContractAddress: string;
     privateKey?: string;
+    customRpcUrl?: string;
   }) {
-    const { web3Provider, network, erc1155ContractAddress, privateKey } =
+    const { web3Provider, network, erc1155ContractAddress, privateKey, customRpcUrl } =
       options;
     if (!network) throw new Error("network is reuired.");
     if (!erc1155ContractAddress)
@@ -28,7 +29,7 @@ export class ERC1155 {
         web3Provider
       );
     } else {
-      const rpcProvider = getRpcProvider(network);
+      const rpcProvider = getRpcProvider(network, customRpcUrl);
 
       let wallet;
       if (privateKey) wallet = new ethers.Wallet(privateKey, rpcProvider);

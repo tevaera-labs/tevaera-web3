@@ -17,8 +17,9 @@ export class InnovativeUnicorn {
     web3Provider?: zksync.Web3Provider | ethers.providers.Web3Provider;
     network: Network;
     privateKey?: string;
+    customRpcUrl?: string;
   }) {
-    const { web3Provider, network, privateKey } = options;
+    const { web3Provider, network, privateKey, customRpcUrl } = options;
     if (!network) throw new Error("network is reuired.");
     const { innovativeUnicornContractAddress } = getContractAddresses(network);
 
@@ -32,7 +33,7 @@ export class InnovativeUnicorn {
         web3Provider.getSigner() || web3Provider
       );
     } else {
-      const rpcProvider = getRpcProvider(network);
+      const rpcProvider = getRpcProvider(network, customRpcUrl);
 
       let wallet;
       if (privateKey) wallet = new ethers.Wallet(privateKey, rpcProvider);

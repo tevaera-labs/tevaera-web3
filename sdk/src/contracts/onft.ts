@@ -18,8 +18,9 @@ export class ONFT {
     network: Network;
     onftContractAddress: string;
     privateKey?: string;
+    customRpcUrl?: string;
   }) {
-    const { web3Provider, network, onftContractAddress, privateKey } = options;
+    const { web3Provider, network, onftContractAddress, privateKey, customRpcUrl } = options;
     if (!network) throw new Error("network is reuired.");
     if (!onftContractAddress)
       throw new Error("onftContractAddress is reuired.");
@@ -31,7 +32,7 @@ export class ONFT {
         web3Provider.getSigner() || web3Provider
       );
     } else {
-      const rpcProvider = getRpcProvider(network);
+      const rpcProvider = getRpcProvider(network, customRpcUrl);
 
       let wallet;
       if (privateKey) wallet = new ethers.Wallet(privateKey, rpcProvider);
