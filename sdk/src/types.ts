@@ -15,3 +15,13 @@ export enum Network {
   BaseGoerli = 84531,
   ScrollSepolia = 534351
 }
+
+export type SUPPORTED_CHAIN_ID = Network.ZksyncEra | Network.ZksyncEraGoerli;
+
+export interface Token {
+  // native tokens all have 18 decimals
+  address: string;
+  name: string;
+  symbol: string;
+  decimals: number;
+}

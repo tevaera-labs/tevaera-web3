@@ -81,15 +81,25 @@ export class MagicalPhoenix {
     isGaslessFlow?: boolean
   ): Promise<unknown> {
     // get paymaster overrides if applicable
-    const overrides = await getPaymasterCustomOverrides({
+    let overrides = {};
+
+    // estimate gas for paymaster transaction
+    let gasLimit;
+    if (feeToken) {
+      gasLimit = await this.contract.estimateGas.mint(overrides);
+    }
+
+    // update paymaster params with the updated fee
+    overrides = await getPaymasterCustomOverrides({
       network: this.network,
-      overrides: {},
+      overrides,
       feeToken,
-      isGaslessFlow
+      isGaslessFlow,
+      contract: this.contract,
+      gasLimit
     });
 
     const mintTx = await this.contract.mint(overrides);
-    await mintTx.wait();
 
     return mintTx;
   }

@@ -17,7 +17,13 @@ export class ERC20 {
     privateKey?: string;
     customRpcUrl?: string;
   }) {
-    const { web3Provider, network, erc20ContractAddress, privateKey, customRpcUrl } = options;
+    const {
+      web3Provider,
+      network,
+      erc20ContractAddress,
+      privateKey,
+      customRpcUrl
+    } = options;
     if (!network) throw new Error("network is reuired.");
     if (!erc20ContractAddress)
       throw new Error("erc20ContractAddress is reuired.");
@@ -81,11 +87,26 @@ export class ERC20 {
     isGaslessFlow?: boolean
   ): Promise<unknown> {
     // get paymaster overrides if applicable
-    const overrides = await getPaymasterCustomOverrides({
+    let overrides = {};
+
+    // estimate gas for paymaster transaction
+    let gasLimit;
+    if (feeToken) {
+      gasLimit = await this.contract.estimateGas.approve(
+        spender,
+        parseUnits(value, await this.getDecimals()),
+        overrides
+      );
+    }
+
+    // update paymaster params with the updated fee
+    overrides = await getPaymasterCustomOverrides({
       network: this.network,
-      overrides: {},
+      overrides,
       feeToken,
-      isGaslessFlow
+      isGaslessFlow,
+      contract: this.contract,
+      gasLimit
     });
 
     return this.contract.approve(

@@ -117,12 +117,25 @@ export class Multicall {
       value: totalValue // Total value to send
     };
 
-    // get paymaster overrides if applicable
+    // estimate gas for paymaster transaction
+    let gasLimit;
+    if (feeToken) {
+      gasLimit = await this.multicall.estimateGas.aggregatePayable(
+        targets,
+        callDatas,
+        values,
+        overrides
+      );
+    }
+
+    // update paymaster params with the updated fee
     overrides = await getPaymasterCustomOverrides({
       network: this.network,
       overrides,
       feeToken,
-      isGaslessFlow
+      isGaslessFlow,
+      contract: this.multicall,
+      gasLimit
     });
 
     // muticall
@@ -176,12 +189,25 @@ export class Multicall {
       value: citizenidPrice.add(guardianbundlePrice).add(kpPrice) // Total value to send
     };
 
-    // get paymaster overrides if applicable
+    // estimate gas for paymaster transaction
+    let gasLimit;
+    if (feeToken) {
+      gasLimit = await this.multicall.estimateGas.aggregatePayable(
+        targets,
+        callDatas,
+        values,
+        overrides
+      );
+    }
+
+    // update paymaster params with the updated fee
     overrides = await getPaymasterCustomOverrides({
       network: this.network,
       overrides,
       feeToken,
-      isGaslessFlow
+      isGaslessFlow,
+      contract: this.multicall,
+      gasLimit
     });
 
     // muticall

@@ -44,7 +44,6 @@ export class Claim {
     const claimTx = await this.contract.claim({
       value: citizenIdPrice
     });
-    await claimTx.wait();
 
     return claimTx;
   }

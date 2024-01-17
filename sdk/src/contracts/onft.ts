@@ -5,7 +5,7 @@ import { BigNumber, BigNumberish, ethers, utils } from "ethers";
 import {
   getLzChainId,
   getPaymasterCustomOverrides,
-  getRpcProvider,
+  getRpcProvider
 } from "../utils";
 import { Network } from "../types";
 
@@ -20,7 +20,13 @@ export class ONFT {
     privateKey?: string;
     customRpcUrl?: string;
   }) {
-    const { web3Provider, network, onftContractAddress, privateKey, customRpcUrl } = options;
+    const {
+      web3Provider,
+      network,
+      onftContractAddress,
+      privateKey,
+      customRpcUrl
+    } = options;
     if (!network) throw new Error("network is reuired.");
     if (!onftContractAddress)
       throw new Error("onftContractAddress is reuired.");
@@ -105,7 +111,7 @@ export class ONFT {
       receiver,
       royaltyAmount: royaltyAmount
         ? Number(ethers.utils.formatUnits(royaltyAmount, 18)) // Assuming it's ETH
-        : 0,
+        : 0
     };
   }
 
@@ -152,15 +158,32 @@ export class ONFT {
 
     // prepare overrides
     let overrides = {
-      value: utils.parseEther(fee),
+      value: utils.parseEther(fee)
     };
 
-    // get paymaster overrides if applicable
+    // estimate gas for paymaster transaction
+    let gasLimit;
+    if (feeToken) {
+      gasLimit = await this.contract.estimateGas.sendFrom(
+        wallet,
+        destChainId,
+        wallet,
+        BigNumber.from(tokenId),
+        refundAddress,
+        ethers.constants.AddressZero,
+        adapterParams,
+        overrides
+      );
+    }
+
+    // update paymaster params with the updated fee
     overrides = await getPaymasterCustomOverrides({
       network: this.network,
       overrides,
       feeToken,
       isGaslessFlow,
+      contract: this.contract,
+      gasLimit
     });
 
     const tx = await this.contract.sendFrom(
@@ -169,7 +192,7 @@ export class ONFT {
       wallet,
       BigNumber.from(tokenId),
       refundAddress,
-      "0x0000000000000000000000000000000000000000",
+      ethers.constants.AddressZero,
       adapterParams,
       overrides
     );

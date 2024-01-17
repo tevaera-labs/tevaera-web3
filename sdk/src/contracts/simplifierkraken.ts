@@ -92,16 +92,23 @@ export class SimplifierKraken {
       value: price
     };
 
-    // get paymaster overrides if applicable
+    // estimate gas for paymaster transaction
+    let gasLimit;
+    if (feeToken) {
+      gasLimit = await this.contract.estimateGas.mint(overrides);
+    }
+
+    // update paymaster params with the updated fee
     overrides = await getPaymasterCustomOverrides({
       network: this.network,
       overrides,
       feeToken,
-      isGaslessFlow
+      isGaslessFlow,
+      contract: this.contract,
+      gasLimit
     });
 
     const mintTx = await this.contract.mint(overrides);
-    await mintTx.wait();
 
     return mintTx;
   }

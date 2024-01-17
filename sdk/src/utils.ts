@@ -1,7 +1,14 @@
-import { ethers } from "ethers";
+import { BigNumber, BigNumberish, ethers } from "ethers";
 import * as zksync from "zksync-web3";
 
-import { Network } from "./types";
+import { Network, SUPPORTED_CHAIN_ID, Token } from "./types";
+
+// native token
+export const NATIVE_TOKEN_ADDRESS =
+  "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee";
+
+// Fee buffer for paymaster to be on the safer side in case gas prices slightly spike.
+export const PRICE_BUFFER_BPS = "1500"; // 15%
 
 // rpc urls
 export const ZKSYNC_ERA_RPC_URL = "https://mainnet.era.zksync.io";
@@ -18,6 +25,71 @@ export const BASE_GOERLI_RPC_URL = "https://goerli.base.org";
 
 export const SCROLL_RPC_URL = "https://rpc.scroll.io";
 export const SCROLL_SEPOLIA_RPC_URL = "	https://sepolia-rpc.scroll.io";
+
+export const TOKENS: Record<SUPPORTED_CHAIN_ID, Token[]> = {
+  [Network.ZksyncEra]: [
+    {
+      address: "0x5aea5775959fbc2557cc8789bc1bf90a239d9a91",
+      name: "Wrapped ETH",
+      symbol: "WETH",
+      decimals: 18
+    },
+    {
+      address: "0x3355df6D4c9C3035724Fd0e3914dE96A5a83aaf4",
+      name: "USDC",
+      symbol: "USDC",
+      decimals: 6
+    },
+    {
+      address: "0xBBeB516fb02a01611cBBE0453Fe3c580D7281011",
+      name: "Wrapped BTC",
+      symbol: "WBTC",
+      decimals: 8
+    }
+  ],
+  [Network.ZksyncEraGoerli]: [
+    {
+      address: "0x20b28B1e4665FFf290650586ad76E977EAb90c5D",
+      name: "Wrapped ETH",
+      symbol: "WETH",
+      decimals: 18
+    },
+    {
+      address: "0x0faF6df7054946141266420b43783387A78d82A9",
+      name: "USDC",
+      symbol: "USDC",
+      decimals: 6
+    },
+    {
+      address: "0x0BfcE1D53451B4a8175DD94e6e029F7d8a701e9c",
+      name: "Wrapped BTC",
+      symbol: "WBTC",
+      decimals: 8
+    }
+  ]
+};
+
+export function getToken(network: Network): Token[] {
+  return TOKENS[network as SUPPORTED_CHAIN_ID];
+}
+
+export function getTokenBySymbol(
+  network: Network,
+  symbol: string
+): Token | undefined {
+  const tokens = TOKENS[network as SUPPORTED_CHAIN_ID];
+
+  return tokens.find((x) => x.symbol === symbol);
+}
+
+export function getTokenByAddress(
+  network: Network,
+  address: string
+): Token | undefined {
+  const tokens = TOKENS[network as SUPPORTED_CHAIN_ID];
+
+  return tokens.find((x) => x.address === address);
+}
 
 // tevaera contracts
 export const getContractAddresses = (network: Network) => {
@@ -272,13 +344,74 @@ export const getRpcUrl = (network: Network) => {
   }
 };
 
+export async function calculateFee(options: {
+  network: Network;
+  fee: BigNumber;
+  feeToken: string;
+  customRpcUrl?: string;
+}): Promise<BigNumberish> {
+  const { customRpcUrl, fee, feeToken, network } = options;
+
+  console.log("[Teva Paymaster] Gas fee in ETH: %s", fee.toString());
+
+  // Let the paymaster flow; don't break anything. Instead, allow the user to pay in ETH and continue.
+  try {
+    // get teva paymaster address
+    const { tevaPayMasterContractAddress } = getContractAddresses(network);
+    const rpcProvider = getRpcProvider(network, customRpcUrl);
+    const paymaster = new zksync.Contract(
+      tevaPayMasterContractAddress as string,
+      require("./abi/TevaPaymaster.json").abi,
+      rpcProvider
+    );
+
+    const token = getTokenByAddress(network, feeToken);
+    if (!token) {
+      throw new Error(
+        `Fee token (${feeToken}) is not supported for the paymaster.`
+      );
+    }
+
+    const { decimals } = token;
+    const tokenPricesInUSD = await paymaster.tokenPricesInUSD(feeToken);
+
+    if (Number(tokenPricesInUSD) === 0) {
+      throw new Error(
+        `Fee token (${feeToken}) is not supported for the paymaster.`
+      );
+    }
+
+    const ethPriceInUSD = await paymaster.tokenPricesInUSD(
+      NATIVE_TOKEN_ADDRESS
+    );
+
+    const additionalDecimals = 18 - decimals;
+    const exponent = BigNumber.from(10).pow(additionalDecimals);
+    const priceInToken = fee
+      .mul(ethPriceInUSD)
+      .div(tokenPricesInUSD.mul(exponent));
+    const buffer = priceInToken.mul(PRICE_BUFFER_BPS).div("10000");
+
+    return priceInToken.add(buffer);
+  } catch (error) {
+    console.error(
+      "Error occured while calculating the fee with fee token: " + feeToken
+    );
+
+    throw error;
+  }
+}
+
 export async function getPaymasterCustomOverrides(options: {
   network: Network;
   overrides?: any;
   feeToken?: string;
   isGaslessFlow?: boolean;
+  contract?: zksync.Contract;
+  gasLimit?: BigNumberish;
 }): Promise<any> {
-  const { overrides = {}, feeToken, isGaslessFlow, network } = options;
+  const { contract, feeToken, gasLimit, isGaslessFlow, network } = options;
+  let { overrides = {} } = options;
 
   // Let the paymaster flow; don't break anything. Instead, allow the user to pay in ETH and continue.
   try {
@@ -293,10 +426,27 @@ export async function getPaymasterCustomOverrides(options: {
     // if feeToken is provided, it's approval-based paymaster flow
     if (
       feeToken &&
-      feeToken !== zksync.utils.ETH_ADDRESS &&
-      feeToken !== zksync.utils.L2_ETH_TOKEN_ADDRESS
+      ![
+        NATIVE_TOKEN_ADDRESS,
+        zksync.utils.ETH_ADDRESS,
+        zksync.utils.L2_ETH_TOKEN_ADDRESS
+      ].includes(feeToken)
     ) {
       console.log("[TevaPaymaster] Approval based flow");
+
+      let fee;
+      // add gas limit if provided explicitly
+      if (contract && gasLimit) {
+        const gasPrice = await contract.provider.getGasPrice();
+        // calculate fee in given token
+        fee = await calculateFee({
+          network,
+          fee: gasPrice.mul(gasLimit.toString()),
+          feeToken
+        });
+
+        overrides.gasLimit = gasLimit;
+      }
 
       // add paymaster approval based params
       paymasterParams = zksync.utils.getPaymasterParams(
@@ -305,7 +455,7 @@ export async function getPaymasterCustomOverrides(options: {
           type: "ApprovalBased",
           token: feeToken,
           // set minimalAllowance as we defined in the paymaster contract
-          minimalAllowance: ethers.BigNumber.from(1),
+          minimalAllowance: ethers.BigNumber.from(fee || 1),
           // empty bytes as testnet paymaster does not use innerInput
           innerInput: new Uint8Array()
         }
