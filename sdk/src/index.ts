@@ -11,6 +11,7 @@ export { InnovativeUnicorn } from "./contracts/innovativeunicorn";
 export { NomadicYeti } from "./contracts/nomadicyeti";
 export { SimplifierKraken } from "./contracts/simplifierkraken";
 export { GuardianBundler } from "./contracts/guardianbundler";
+export { TevaQuestRegistry } from "./contracts/tevaquestregistry";
 
 export { ERC20 } from "./contracts/erc20";
 export { ERC721 } from "./contracts/erc721";

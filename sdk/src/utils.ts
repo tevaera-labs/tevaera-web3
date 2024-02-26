@@ -148,7 +148,8 @@ export const getContractAddresses = (network: Network) => {
         multicallContractAddress: "0xDC3FBA29a533c484069d12E4e6061A7C9f41d841",
         sessionAccountFactoryAddress:
           "0x952A4FE79fF363ABd1752DF98D3720363DD665b8",
-        tevaTrustedSignerAddress: "0x9910FB35F401eFa865852b53285e678E21753e5e"
+        tevaTrustedSignerAddress: "0x9910FB35F401eFa865852b53285e678E21753e5e",
+        tevaQuestRegistryAddress: "0x0Ab241e022786309490FB8A066Cec9aF5c2E2A32"
       };
     case Network.ArbitrumOne:
       return {
