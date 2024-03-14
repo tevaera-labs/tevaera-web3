@@ -1,49 +1,64 @@
 /* import dependencies */
-import * as zksync from "zksync-web3";
-import { BigNumber, BigNumberish, ethers, utils } from "ethers";
+import {
+  ContractRunner,
+  ZeroAddress,
+  formatEther,
+  formatUnits,
+  getBytes,
+  parseEther,
+  parseUnits,
+  solidityPacked
+} from "ethers";
 
+import { ContractFactory } from "../factories/ContractFactory";
 import {
   getLzChainId,
   getPaymasterCustomOverrides,
   getRpcProvider
 } from "../utils";
-import { Network } from "../types";
+import { Network, SupportedContract } from "../types";
+import { WalletFactory } from "../factories/WalletFactory";
 
 export class ONFT {
-  readonly contract: ethers.Contract;
+  readonly contract: SupportedContract;
   readonly network: Network;
 
   constructor(options: {
-    web3Provider?: zksync.Web3Provider | ethers.providers.Web3Provider;
     network: Network;
     onftContractAddress: string;
+    contractRunner?: ContractRunner;
     privateKey?: string;
     customRpcUrl?: string;
   }) {
     const {
-      web3Provider,
+      contractRunner,
+      customRpcUrl,
       network,
       onftContractAddress,
-      privateKey,
-      customRpcUrl
+      privateKey
     } = options;
     if (!network) throw new Error("network is reuired.");
     if (!onftContractAddress)
       throw new Error("onftContractAddress is reuired.");
 
-    if (web3Provider) {
-      this.contract = new ethers.Contract(
+    if (contractRunner) {
+      const contractFactory = new ContractFactory(network);
+      this.contract = contractFactory.createContract(
         onftContractAddress,
         require("../abi/ONFT.json").abi,
-        web3Provider.getSigner() || web3Provider
+        contractRunner
       );
     } else {
       const rpcProvider = getRpcProvider(network, customRpcUrl);
 
       let wallet;
-      if (privateKey) wallet = new ethers.Wallet(privateKey, rpcProvider);
+      if (privateKey) {
+        const walletFactory = new WalletFactory(rpcProvider);
+        wallet = walletFactory.createWallet(privateKey);
+      }
 
-      this.contract = new ethers.Contract(
+      const contractFactory = new ContractFactory(network);
+      this.contract = contractFactory.createContract(
         onftContractAddress,
         require("../abi/ONFT.json").abi,
         wallet || rpcProvider
@@ -77,15 +92,13 @@ export class ONFT {
   }
 
   async getOwnerOf(tokenId: string): Promise<string> {
-    const address = await this.contract.ownerOf(
-      ethers.utils.parseUnits(tokenId, 0)
-    );
+    const address = await this.contract.ownerOf(parseUnits(tokenId, 0));
     return address;
   }
 
   async getTotalSupply(): Promise<string> {
     const totalSupply = await this.contract.totalSupply();
-    return utils.formatUnits(totalSupply, 0);
+    return formatUnits(totalSupply, 0);
   }
 
   async getContractURI(): Promise<string> {
@@ -110,7 +123,7 @@ export class ONFT {
     return {
       receiver,
       royaltyAmount: royaltyAmount
-        ? Number(ethers.utils.formatUnits(royaltyAmount, 18)) // Assuming it's ETH
+        ? Number(formatUnits(royaltyAmount, 18)) // Assuming it's ETH
         : 0
     };
   }
@@ -120,11 +133,11 @@ export class ONFT {
   async getCrosschainFeeEstimation(
     dest: Network,
     wallet: string,
-    tokenId: BigNumberish,
+    tokenId: bigint,
     minGas?: string
   ): Promise<unknown> {
     const minGasWei = minGas || "350000";
-    const adapterParams = ethers.utils.solidityPack(
+    const adapterParams = solidityPacked(
       ["uint16", "uint256"],
       ["1", minGasWei] // package type (1 = send), min gas = 350000 wei
     );
@@ -132,17 +145,17 @@ export class ONFT {
     const fee = await this.contract.estimateSendFee(
       destChainId,
       wallet,
-      BigNumber.from(tokenId),
+      BigInt(tokenId),
       false,
       adapterParams
     );
-    return utils.formatEther(fee.nativeFee);
+    return formatEther(fee.nativeFee);
   }
 
   async crosschainTransfer(
     dest: Network,
     wallet: string,
-    tokenId: BigNumberish,
+    tokenId: bigint,
     refundAddress: string,
     fee: string,
     feeToken?: string,
@@ -150,7 +163,7 @@ export class ONFT {
     minGas?: string
   ): Promise<unknown> {
     const minGasWei = minGas || "350000";
-    const adapterParams = ethers.utils.solidityPack(
+    const adapterParams = solidityPacked(
       ["uint16", "uint256"],
       ["1", minGasWei] // package type (1 = send), min gas = 350000 wei
     );
@@ -158,19 +171,19 @@ export class ONFT {
 
     // prepare overrides
     let overrides = {
-      value: utils.parseEther(fee)
+      value: parseEther(fee)
     };
 
     // estimate gas for paymaster transaction
     let gasLimit;
     if (feeToken) {
-      gasLimit = await this.contract.estimateGas.sendFrom(
+      gasLimit = await this.contract.sendFrom.estimateGas(
         wallet,
         destChainId,
         wallet,
-        BigNumber.from(tokenId),
+        BigInt(tokenId),
         refundAddress,
-        ethers.constants.AddressZero,
+        ZeroAddress,
         adapterParams,
         overrides
       );
@@ -190,9 +203,9 @@ export class ONFT {
       wallet,
       destChainId,
       wallet,
-      BigNumber.from(tokenId),
+      BigInt(tokenId),
       refundAddress,
-      ethers.constants.AddressZero,
+      ZeroAddress,
       adapterParams,
       overrides
     );
@@ -201,7 +214,7 @@ export class ONFT {
   }
 
   async isONft(): Promise<boolean> {
-    const onftInterfaceId = ethers.utils.arrayify("0x22bac5d9");
+    const onftInterfaceId = getBytes("0x22bac5d9");
     const isONft = await this.contract.supportsInterface(onftInterfaceId);
     return isONft;
   }

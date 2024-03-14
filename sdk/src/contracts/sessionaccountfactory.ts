@@ -1,49 +1,51 @@
 /* import dependencies */
-import * as zksync from "zksync-web3";
-import { ethers } from "ethers";
+import * as zksync from "zksync-ethers";
+import { AbiCoder, ContractRunner, Signer, hexlify } from "ethers";
+import { randomBytes } from "crypto";
 
 import { getContractAddresses, getRpcProvider } from "../utils";
 import { Network } from "../types";
 
 export class SessionAccountFactory {
   readonly network: Network;
-  readonly sessionAccountFactory: ethers.Contract;
-  readonly signerOrWallet: any;
+  readonly sessionAccountFactory: zksync.Contract;
+  readonly contractRunner?: ContractRunner;
 
   constructor(options: {
-    web3Provider?: zksync.Web3Provider | ethers.providers.Web3Provider;
     network: Network;
+    contractRunner?: ContractRunner;
     privateKey?: string;
     customRpcUrl?: string;
   }) {
-    const { web3Provider, network, privateKey, customRpcUrl } = options;
+    const { contractRunner, network, privateKey, customRpcUrl } = options;
     if (!network) throw new Error("network is reuired.");
 
     const { sessionAccountFactoryAddress } = getContractAddresses(network);
     if (!sessionAccountFactoryAddress)
       throw new Error("Session account factory not found!");
 
-    if (web3Provider) {
-      this.sessionAccountFactory = new ethers.Contract(
+    if (contractRunner) {
+      this.sessionAccountFactory = new zksync.Contract(
         sessionAccountFactoryAddress,
         require("../abi/SessionAccountFactory.json").abi,
-        web3Provider.getSigner() || web3Provider
+        contractRunner
       );
 
-      this.signerOrWallet = web3Provider.getSigner() || web3Provider;
+      this.contractRunner = contractRunner;
     } else {
       const rpcProvider = getRpcProvider(network, customRpcUrl);
 
       let wallet;
-      if (privateKey) wallet = new ethers.Wallet(privateKey, rpcProvider);
+      if (privateKey)
+        wallet = new zksync.Wallet(privateKey, rpcProvider as zksync.Provider);
 
-      this.sessionAccountFactory = new ethers.Contract(
+      this.sessionAccountFactory = new zksync.Contract(
         sessionAccountFactoryAddress,
         require("../abi/SessionAccountFactory.json").abi,
         wallet || rpcProvider
       );
 
-      this.signerOrWallet = wallet || rpcProvider;
+      this.contractRunner = wallet || rpcProvider;
     }
 
     this.network = network;
@@ -56,10 +58,10 @@ export class SessionAccountFactory {
     const secondsUntilEndTime = duration || 7200; // default to 2 hours
 
     // create an instance of session account
-    const account = new ethers.Contract(
+    const account = new zksync.Contract(
       sessionAccount,
       require("../abi/SessionAccount.json").abi,
-      this.signerOrWallet
+      this.contractRunner
     );
 
     // get trusted teva signer
@@ -74,23 +76,23 @@ export class SessionAccountFactory {
   }
 
   async createSessionAccount(): Promise<string> {
-    const ownerAddress = await this.sessionAccountFactory.signer.getAddress();
+    const ownerAddress = await (this.contractRunner as Signer).getAddress();
     // generate random salt to make sure unique address is returned
     const randomBytesLength = 32; // for a 256-bit value, change this to your desired length
-    const randomBytes = ethers.utils.randomBytes(randomBytesLength);
-    const randomDeploymentSalt = ethers.utils.hexlify(randomBytes);
+    const randomByte = randomBytes(randomBytesLength);
+    const randomDeploymentSalt = hexlify(randomByte);
 
     // deploy the session account
     const tx = await this.sessionAccountFactory.deployAccount(
       randomDeploymentSalt,
-      this.sessionAccountFactory.signer.getAddress()
+      ownerAddress
     );
     await tx.wait();
 
     // generate session account addressF
-    const abiCoder = new ethers.utils.AbiCoder();
+    const abiCoder = new AbiCoder();
     const sessionAccountAddress = zksync.utils.create2Address(
-      this.sessionAccountFactory.address,
+      await this.sessionAccountFactory.getAddress(),
       await this.sessionAccountFactory.aaBytecodeHash(),
       randomDeploymentSalt,
       abiCoder.encode(["address"], [ownerAddress])
@@ -102,10 +104,10 @@ export class SessionAccountFactory {
 
   async deleteSession(sessionAccount: string): Promise<unknown> {
     // create an instance of session account
-    const account = new ethers.Contract(
+    const account = new zksync.Contract(
       sessionAccount,
       require("../abi/SessionAccount.json").abi,
-      this.signerOrWallet
+      this.contractRunner
     );
 
     // get trusted teva signer
@@ -118,10 +120,10 @@ export class SessionAccountFactory {
 
   async getActiveSession(sessionAccount: string): Promise<unknown> {
     // create an instance of session account
-    const account = new ethers.Contract(
+    const account = new zksync.Contract(
       sessionAccount,
       require("../abi/SessionAccount.json").abi,
-      this.signerOrWallet
+      this.contractRunner
     );
 
     // get trusted teva signer
@@ -141,10 +143,10 @@ export class SessionAccountFactory {
 
   async getSessionAccount(sessionAccount: string): Promise<unknown> {
     // create an instance of session account
-    const account = new ethers.Contract(
+    const account = new zksync.Contract(
       sessionAccount,
       require("../abi/SessionAccount.json").abi,
-      this.signerOrWallet
+      this.contractRunner
     );
 
     return account;

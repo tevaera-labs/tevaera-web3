@@ -1,6 +1,6 @@
 {
   "name": "@tevaeralabs/tevaera-web3",
-  "version": "0.0.83",
+  "version": "0.1.3-development",
   "description": "An npm package to interact with smart contracts created by Tevaera Labs on the zkSync network(A L2 solution on ethereum network). It can be used in browser applications.",
   "exports": {
     ".": {
@@ -47,17 +47,17 @@
   },
   "homepage": "https://github.com/Daoiq-money/tevaera-web3#readme",
   "devDependencies": {
-    "@types/chai": "^4.3.3",
-    "@types/mocha": "^9.1.1",
-    "chai": "^4.3.6",
-    "mocha": "^10.0.0",
-    "semantic-release": "^19.0.3",
-    "ts-node": "^10.9.1",
-    "typescript": "^4.7.4"
+    "@types/chai": "^4.3.11",
+    "@types/mocha": "^10.0.6",
+    "chai": "^5.0.3",
+    "mocha": "^10.3.0",
+    "semantic-release": "^23.0.2",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.3.3"
   },
   "dependencies": {},
   "peerDependencies": {
-    "ethers": "^5.7.2",
-    "zksync-web3": "^0.14.3"
+    "zksync-ethers": "^6.5.0",
+    "ethers": "^6.11.1"
   }
 }

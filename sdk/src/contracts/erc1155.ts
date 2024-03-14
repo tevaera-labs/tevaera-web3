@@ -1,40 +1,51 @@
 /* import dependencies */
-import * as zksync from "zksync-web3";
-import { ethers } from "ethers";
+import { ContractRunner, getBytes } from "ethers";
 
+import { ContractFactory } from "../factories/ContractFactory";
 import { getRpcProvider } from "../utils";
-import { Network } from "../types";
+import { Network, SupportedContract } from "../types";
+import { WalletFactory } from "../factories/WalletFactory";
 
 export class ERC1155 {
-  readonly contract: ethers.Contract;
+  readonly contract: SupportedContract;
   readonly network: Network;
 
   constructor(options: {
-    web3Provider?: zksync.Web3Provider | ethers.providers.Web3Provider;
-    network: Network;
     erc1155ContractAddress: string;
+    network: Network;
+    contractRunner?: ContractRunner;
     privateKey?: string;
     customRpcUrl?: string;
   }) {
-    const { web3Provider, network, erc1155ContractAddress, privateKey, customRpcUrl } =
-      options;
+    const {
+      contractRunner,
+      customRpcUrl,
+      erc1155ContractAddress,
+      network,
+      privateKey
+    } = options;
     if (!network) throw new Error("network is reuired.");
     if (!erc1155ContractAddress)
       throw new Error("erc1155ContractAddress is reuired.");
 
-    if (web3Provider) {
-      this.contract = new ethers.Contract(
+    if (contractRunner) {
+      const contractFactory = new ContractFactory(network);
+      this.contract = contractFactory.createContract(
         erc1155ContractAddress,
         require("../abi/ERC1155.json").abi,
-        web3Provider
+        contractRunner
       );
     } else {
       const rpcProvider = getRpcProvider(network, customRpcUrl);
 
       let wallet;
-      if (privateKey) wallet = new ethers.Wallet(privateKey, rpcProvider);
+      if (privateKey) {
+        const walletFactory = new WalletFactory(rpcProvider);
+        wallet = walletFactory.createWallet(privateKey);
+      }
 
-      this.contract = new ethers.Contract(
+      const contractFactory = new ContractFactory(network);
+      this.contract = contractFactory.createContract(
         erc1155ContractAddress,
         require("../abi/ERC1155.json").abi,
         wallet || rpcProvider
@@ -55,7 +66,7 @@ export class ERC1155 {
   }
 
   async isERC1155(): Promise<boolean> {
-    const erc1155InterfaceId = ethers.utils.arrayify("0xd9b67a26");
+    const erc1155InterfaceId = getBytes("0xd9b67a26");
     const isErc1155 = await this.contract.supportsInterface(erc1155InterfaceId);
     return isErc1155;
   }

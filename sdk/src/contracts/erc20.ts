@@ -1,46 +1,51 @@
 /* import dependencies */
-import * as zksync from "zksync-web3";
-import { BigNumberish, ethers } from "ethers";
+import { ContractRunner, formatUnits, parseUnits } from "ethers";
 
+import { ContractFactory } from "../factories/ContractFactory";
 import { getPaymasterCustomOverrides, getRpcProvider } from "../utils";
-import { formatUnits, parseUnits } from "ethers/lib/utils";
-import { Network } from "../types";
+import { Network, SupportedContract } from "../types";
+import { WalletFactory } from "../factories/WalletFactory";
 
 export class ERC20 {
-  readonly contract: ethers.Contract;
+  readonly contract: SupportedContract;
   readonly network: Network;
 
   constructor(options: {
-    web3Provider?: zksync.Web3Provider | ethers.providers.Web3Provider;
     network: Network;
     erc20ContractAddress: string;
+    contractRunner?: ContractRunner;
     privateKey?: string;
     customRpcUrl?: string;
   }) {
     const {
-      web3Provider,
-      network,
+      contractRunner,
+      customRpcUrl,
       erc20ContractAddress,
-      privateKey,
-      customRpcUrl
+      network,
+      privateKey
     } = options;
     if (!network) throw new Error("network is reuired.");
     if (!erc20ContractAddress)
       throw new Error("erc20ContractAddress is reuired.");
 
-    if (web3Provider) {
-      this.contract = new ethers.Contract(
+    if (contractRunner) {
+      const contractFactory = new ContractFactory(network);
+      this.contract = contractFactory.createContract(
         erc20ContractAddress,
         require("../abi/ERC20.json").abi,
-        web3Provider.getSigner() || web3Provider
+        contractRunner
       );
     } else {
       const rpcProvider = getRpcProvider(network, customRpcUrl);
 
       let wallet;
-      if (privateKey) wallet = new ethers.Wallet(privateKey, rpcProvider);
+      if (privateKey) {
+        const walletFactory = new WalletFactory(rpcProvider);
+        wallet = walletFactory.createWallet(privateKey);
+      }
 
-      this.contract = new ethers.Contract(
+      const contractFactory = new ContractFactory(network);
+      this.contract = contractFactory.createContract(
         erc20ContractAddress,
         require("../abi/ERC20.json").abi,
         wallet || rpcProvider
@@ -55,9 +60,9 @@ export class ERC20 {
     return formatUnits(balance, await this.getDecimals());
   }
 
-  async getDecimals(): Promise<BigNumberish | undefined> {
+  async getDecimals(): Promise<bigint | undefined> {
     const decimals = await this.contract.decimals();
-    return decimals;
+    return BigInt(decimals);
   }
 
   async getName(): Promise<string> {
@@ -92,7 +97,7 @@ export class ERC20 {
     // estimate gas for paymaster transaction
     let gasLimit;
     if (feeToken) {
-      gasLimit = await this.contract.estimateGas.approve(
+      gasLimit = await this.contract.approve.estimateGas(
         spender,
         parseUnits(value, await this.getDecimals()),
         overrides

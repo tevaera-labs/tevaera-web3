@@ -1,41 +1,51 @@
 /* import dependencies */
-import * as zksync from "zksync-web3";
-import { ethers } from "ethers";
+import { ContractRunner, formatUnits, getBytes, parseUnits } from "ethers";
 
+import { ContractFactory } from "../factories/ContractFactory";
 import { getRpcProvider } from "../utils";
-import { formatUnits } from "ethers/lib/utils";
-import { Network } from "../types";
+import { Network, SupportedContract } from "../types";
+import { WalletFactory } from "../factories/WalletFactory";
 
 export class ERC721 {
-  readonly contract: ethers.Contract;
+  readonly contract: SupportedContract;
   readonly network: Network;
 
   constructor(options: {
-    web3Provider?: zksync.Web3Provider | ethers.providers.Web3Provider;
-    network: Network;
     erc721ContractAddress: string;
+    network: Network;
+    contractRunner?: ContractRunner;
     privateKey?: string;
     customRpcUrl?: string;
   }) {
-    const { web3Provider, network, erc721ContractAddress, privateKey, customRpcUrl } =
-      options;
+    const {
+      contractRunner,
+      customRpcUrl,
+      erc721ContractAddress,
+      network,
+      privateKey
+    } = options;
     if (!network) throw new Error("network is reuired.");
     if (!erc721ContractAddress)
       throw new Error("erc721ContractAddress is reuired.");
 
-    if (web3Provider) {
-      this.contract = new ethers.Contract(
+    if (contractRunner) {
+      const contractFactory = new ContractFactory(network);
+      this.contract = contractFactory.createContract(
         erc721ContractAddress,
         require("../abi/ERC721.json").abi,
-        web3Provider
+        contractRunner
       );
     } else {
       const rpcProvider = getRpcProvider(network, customRpcUrl);
 
       let wallet;
-      if (privateKey) wallet = new ethers.Wallet(privateKey, rpcProvider);
+      if (privateKey) {
+        const walletFactory = new WalletFactory(rpcProvider);
+        wallet = walletFactory.createWallet(privateKey);
+      }
 
-      this.contract = new ethers.Contract(
+      const contractFactory = new ContractFactory(network);
+      this.contract = contractFactory.createContract(
         erc721ContractAddress,
         require("../abi/ERC721.json").abi,
         wallet || rpcProvider
@@ -78,9 +88,7 @@ export class ERC721 {
   }
 
   async getOwnerOf(tokenId: string): Promise<string> {
-    const address = await this.contract.ownerOf(
-      ethers.utils.parseUnits(tokenId, 0)
-    );
+    const address = await this.contract.ownerOf(parseUnits(tokenId, 0));
     return address;
   }
 
@@ -111,13 +119,13 @@ export class ERC721 {
     return {
       receiver,
       royaltyAmount: royaltyAmount
-        ? Number(ethers.utils.formatUnits(royaltyAmount, 18)) // Assuming it's ETH
+        ? Number(formatUnits(royaltyAmount, 18)) // Assuming it's ETH
         : 0
     };
   }
 
   async isERC721(): Promise<boolean> {
-    const erc721InterfaceId = ethers.utils.arrayify("0x80ac58cd");
+    const erc721InterfaceId = getBytes("0x80ac58cd");
     const isErc721 = await this.contract.supportsInterface(erc721InterfaceId);
     return isErc721;
   }

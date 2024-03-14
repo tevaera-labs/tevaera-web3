@@ -1,5 +1,5 @@
-import { BigNumber, BigNumberish, ethers } from "ethers";
-import * as zksync from "zksync-web3";
+import * as zksync from "zksync-ethers";
+import * as ethers from "ethers";
 
 import { Network, SUPPORTED_CHAIN_ID, Token } from "./types";
 
@@ -13,15 +13,19 @@ export const PRICE_BUFFER_BPS = "1500"; // 15%
 // rpc urls
 export const ZKSYNC_ERA_RPC_URL = "https://mainnet.era.zksync.io";
 export const ZKSYNC_ERA_GOERLI_RPC_URL = "https://zksync2-testnet.zksync.dev";
+export const ZKSYNC_ERA_SEPOLIA_RPC_URL = "https://sepolia.era.zksync.dev";
 
 export const ARBITRUM_ONE_RPC_URL = "https://arb1.arbitrum.io/rpc";
 export const ARBITRUM_GOERLI_RPC_URL = "https://goerli-rollup.arbitrum.io/rpc";
+export const ARBITRUM_SEPOLIA_RPC_URL =
+  "https://sepolia-rollup.arbitrum.io/rpc";
 
 export const LINEA_RPC_URL = "https://rpc.linea.build";
 export const LINEA_GOERLI_RPC_URL = "https://rpc.goerli.linea.build";
 
 export const BASE_RPC_URL = "https://mainnet.base.org";
 export const BASE_GOERLI_RPC_URL = "https://goerli.base.org";
+export const BASE_SEPOLIA_RPC_URL = "https://sepolia.base.org";
 
 export const SCROLL_RPC_URL = "https://rpc.scroll.io";
 export const SCROLL_SEPOLIA_RPC_URL = "	https://sepolia-rpc.scroll.io";
@@ -66,6 +70,14 @@ export const TOKENS: Record<SUPPORTED_CHAIN_ID, Token[]> = {
       symbol: "WBTC",
       decimals: 8
     }
+  ],
+  [Network.ZksyncEraSepolia]: [
+    {
+      address: "0x75a08aCC65ff9A98dCa04548c789F0F245985c52",
+      name: "Wrapped ETH",
+      symbol: "WETH",
+      decimals: 18
+    }
   ]
 };
 
@@ -96,25 +108,6 @@ export const getContractAddresses = (network: Network) => {
   switch (network) {
     case Network.ZksyncEra:
       return {
-        citizenIdContractAddress: "0xd29Aa7bdD3cbb32557973daD995A3219D307721f",
-        karmaPointContractAddress: "0x9Fc20170d613766831F164f1831F4607Ae54ff2D",
-        claimContractAddress: "0x1EB7bcab5EdF75b5E02c9A72D3287E322EbaEfdB",
-        reformistSphinxContractAddress:
-          "0x50B2b7092bCC15fbB8ac74fE9796Cf24602897Ad",
-        magicalPhoenixContractAddress:
-          "0x0969529a8ea41b47009eb2a590fe71d7942e4f5a",
-        nomadicYetiContractAddress:
-          "0x955AE6B7005eFA49F23cCFcb385cdcf542C06276",
-        influentialWerewolfContractAddress:
-          "0x5060f2F97E7053D1147583B71d190E1A420C42fd",
-        innovativeUnicornContractAddress:
-          "0xcAF741840240E6aB1a010D13368C2d15774487D3",
-        simplifierKrakenContractAddress:
-          "0x44DB5de936f2254fB2988e419D01E9A83DbbAbd2",
-        balancerDragonContractAddress:
-          "0x17D9B864AF82c6B83fa6330D65BFE61f3e944Fff",
-        guardianBundlerContractAddress:
-          "0x5dE117628B5062F56f37d8fB6603524C7189D892",
         tevaPayMasterContractAddress:
           "0x66ea743B004992f97a2e9fc187A607077f21781C",
         multicallContractAddress: "0xA81898C1BC737bfce6955aad572e7658f1be521e",
@@ -124,25 +117,6 @@ export const getContractAddresses = (network: Network) => {
       };
     case Network.ZksyncEraGoerli:
       return {
-        citizenIdContractAddress: "0x178f6217C51B797cA9aB04FC2cE68775C032678e",
-        karmaPointContractAddress: "0x611B67222df44A28B5438ff39FE8b4bE25bE6Ad2",
-        claimContractAddress: "0x3F248D326d8eF82f88865afe2cbf5277a073a880",
-        reformistSphinxContractAddress:
-          "0x77371Ab0e5695B2203c4072807637290241e4dB7",
-        magicalPhoenixContractAddress:
-          "0x9bcb9074e760392907fcadDd18dE3bB48fEdFB5F",
-        nomadicYetiContractAddress:
-          "0x734D7483a98f405295842F7B6360424d28D73f4D",
-        influentialWerewolfContractAddress:
-          "0xAa9f35254255aE06384bC73D1b5DC50F993C2C47",
-        innovativeUnicornContractAddress:
-          "0x3A3A2f4a03ce48B31D3c76E46ce210005cE942BD",
-        simplifierKrakenContractAddress:
-          "0x31A8e9C2D851D2E7d0088B1a2Cc4F625BC938Cf4",
-        balancerDragonContractAddress:
-          "0x2c94b544BEe4994af23Fc5e9436C1195BFA8D2dF",
-        guardianBundlerContractAddress:
-          "0x6dC0590dF111B68c5273B3d1351d01936321dB93",
         tevaPayMasterContractAddress:
           "0x5b9F16cFAF2a3F021ff6B9aD6794FCC3fDB4FeEe",
         multicallContractAddress: "0xDC3FBA29a533c484069d12E4e6061A7C9f41d841",
@@ -150,109 +124,14 @@ export const getContractAddresses = (network: Network) => {
           "0x6C8e495f245feA71b8d15f6A6d217Bd930D5BA37",
         tevaTrustedSignerAddress: "0x9910FB35F401eFa865852b53285e678E21753e5e"
       };
-    case Network.ArbitrumOne:
+    case Network.ZksyncEraSepolia:
       return {
-        nomadicYetiContractAddress:
-          "0x8cFD35c04F44D33501d2590ab4FCB45009a1297B",
-        influentialWerewolfContractAddress:
-          "0x8F657B0902eDD9Fb10e7CdDaa8cFB4228942C788",
-        innovativeUnicornContractAddress:
-          "0x60E880FAa2987f7426aD51E097c08D3266801f52",
-        simplifierKrakenContractAddress:
-          "0xC9F831D329515903CE78e03c6bB7eFB29d645596",
-        balancerDragonContractAddress:
-          "0x6e4bbF3f5e2B33f14FcF40d838e8a0391A32fdD4"
-      };
-    case Network.ArbitrumGoerli:
-      return {
-        nomadicYetiContractAddress:
-          "0x2a7ffFAC2D1f42a9dde8Da3D93e6f5Dc60F21f8C",
-        influentialWerewolfContractAddress:
-          "0xE6f256d2C346B4a1420304EC34E93905d6C4c064",
-        innovativeUnicornContractAddress:
-          "0x8b07eFc6b2b052FAc1A1dCbf70be03a460bCc975",
-        simplifierKrakenContractAddress:
-          "0x927Ff9D72237B5aAc8123EFFc4D071104C9ab88B",
-        balancerDragonContractAddress:
-          "0xBF00f9510C6224f9C097F352DBa61076f9b6251f"
-      };
-    case Network.Linea:
-      return {
-        nomadicYetiContractAddress:
-          "0x8cFD35c04F44D33501d2590ab4FCB45009a1297B",
-        influentialWerewolfContractAddress:
-          "0x8F657B0902eDD9Fb10e7CdDaa8cFB4228942C788",
-        innovativeUnicornContractAddress:
-          "0x60E880FAa2987f7426aD51E097c08D3266801f52",
-        simplifierKrakenContractAddress:
-          "0xC9F831D329515903CE78e03c6bB7eFB29d645596",
-        balancerDragonContractAddress:
-          "0x6e4bbF3f5e2B33f14FcF40d838e8a0391A32fdD4"
-      };
-    case Network.LineaGoerli:
-      return {
-        nomadicYetiContractAddress:
-          "0xe074Da15A835eF5c6A51691A88386d2e03098e55",
-        influentialWerewolfContractAddress:
-          "0xc290215fD158B5d52679DA370c18703Eb37903C3",
-        innovativeUnicornContractAddress:
-          "0xb71e408766294dEAd1ffD905290931cD09bF24f0",
-        simplifierKrakenContractAddress:
-          "0x9a9E5013E8ba662E62d4D85c6401aEa7a17D676E",
-        balancerDragonContractAddress:
-          "0xfA05884C675f1d79302F62071EbEA32158744908"
-      };
-    case Network.Base:
-      return {
-        nomadicYetiContractAddress:
-          "0x8cFD35c04F44D33501d2590ab4FCB45009a1297B",
-        influentialWerewolfContractAddress:
-          "0x60E880FAa2987f7426aD51E097c08D3266801f52",
-        innovativeUnicornContractAddress:
-          "0x8F657B0902eDD9Fb10e7CdDaa8cFB4228942C788",
-        simplifierKrakenContractAddress:
-          "0xC9F831D329515903CE78e03c6bB7eFB29d645596",
-        balancerDragonContractAddress:
-          "0x6e4bbF3f5e2B33f14FcF40d838e8a0391A32fdD4"
-      };
-    case Network.BaseGoerli:
-      return {
-        nomadicYetiContractAddress:
-          "0x06C2d045cf7327Ee9462D7bCF6e19C444C30e8B1",
-        influentialWerewolfContractAddress:
-          "0xebD6f3CF2a13139780Ee55B22bCf8F99559F64ea",
-        innovativeUnicornContractAddress:
-          "0x2d837B1892CE7a61af6DE4d58899762CdF4417Eb",
-        simplifierKrakenContractAddress:
-          "0xf396D14A28A9Bb614B8e7C17D87a8165Bb481712",
-        balancerDragonContractAddress:
-          "0x06738a1919429FD542C52C7BE821Da93811221EB"
-      };
-    case Network.Scroll:
-      return {
-        nomadicYetiContractAddress:
-          "0x8cFD35c04F44D33501d2590ab4FCB45009a1297B",
-        influentialWerewolfContractAddress:
-          "0x8F657B0902eDD9Fb10e7CdDaa8cFB4228942C788",
-        innovativeUnicornContractAddress:
-          "0x60E880FAa2987f7426aD51E097c08D3266801f52",
-        simplifierKrakenContractAddress:
-          "0xC9F831D329515903CE78e03c6bB7eFB29d645596",
-        balancerDragonContractAddress:
-          "0x6e4bbF3f5e2B33f14FcF40d838e8a0391A32fdD4"
-      };
-    case Network.ScrollSepolia:
-      return {
-        nomadicYetiContractAddress:
-          "0x1b5bAeC0B39A946c61BeF6Ce59bd7A3B16a6984f",
-        influentialWerewolfContractAddress:
-          "0x4F256A971bB10bec6Fef854C4b5D0D3c6C154734",
-        innovativeUnicornContractAddress:
-          "0xDe5E097d679543f97f972c168f30b910ee2a965a",
-        simplifierKrakenContractAddress:
-          "0xDaad9f1c847dEdd1B54C037Ed5F63FD392c68cd0",
-        balancerDragonContractAddress:
-          "0x1620e83cB3EB06113db06A5583249a388925c01C"
+        tevaPayMasterContractAddress:
+          "0x9df772A3Ad838280BADd70652fcC0eFD60A14297",
+        multicallContractAddress: "0x68172f20b3ec8305C4474BCBa1f9b7Bff461dFA8",
+        sessionAccountFactoryAddress:
+          "0xBee8e2e60c46E0db2Fe8cD222A8517C19fC59240",
+        tevaTrustedSignerAddress: "0x9910FB35F401eFa865852b53285e678E21753e5e"
       };
 
     default:
@@ -272,10 +151,14 @@ export const getLzChainId = (network: Network) => {
       return 165;
     case Network.ZksyncEraGoerli:
       return 10165;
+    case Network.ZksyncEraSepolia:
+      return 10248;
     case Network.ArbitrumOne:
       return 110;
     case Network.ArbitrumGoerli:
       return 10143;
+    case Network.ArbitrumSepolia:
+      return 10231;
     case Network.Linea:
       return 183;
     case Network.LineaGoerli:
@@ -284,6 +167,8 @@ export const getLzChainId = (network: Network) => {
       return 184;
     case Network.BaseGoerli:
       return 10160;
+    case Network.BaseSepolia:
+      return 10245;
     case Network.Scroll:
       return 214;
     case Network.ScrollSepolia:
@@ -300,16 +185,19 @@ export const getRpcProvider = (network: Network, customRpcUrl?: string) => {
   switch (network) {
     case Network.ZksyncEra:
     case Network.ZksyncEraGoerli:
+    case Network.ZksyncEraSepolia:
       return new zksync.Provider(rpcUrl);
     case Network.ArbitrumOne:
     case Network.ArbitrumGoerli:
+    case Network.ArbitrumSepolia:
     case Network.Linea:
     case Network.LineaGoerli:
     case Network.Base:
     case Network.BaseGoerli:
+    case Network.BaseSepolia:
     case Network.Scroll:
     case Network.ScrollSepolia:
-      return new ethers.providers.JsonRpcProvider(rpcUrl);
+      return new ethers.JsonRpcProvider(rpcUrl);
 
     default:
       throw new Error("invalid network");
@@ -322,10 +210,14 @@ export const getRpcUrl = (network: Network) => {
       return ZKSYNC_ERA_RPC_URL;
     case Network.ZksyncEraGoerli:
       return ZKSYNC_ERA_GOERLI_RPC_URL;
+    case Network.ZksyncEraSepolia:
+      return ZKSYNC_ERA_SEPOLIA_RPC_URL;
     case Network.ArbitrumOne:
       return ARBITRUM_ONE_RPC_URL;
     case Network.ArbitrumGoerli:
       return ARBITRUM_GOERLI_RPC_URL;
+    case Network.ArbitrumSepolia:
+      return ARBITRUM_SEPOLIA_RPC_URL;
     case Network.Linea:
       return LINEA_RPC_URL;
     case Network.LineaGoerli:
@@ -334,6 +226,8 @@ export const getRpcUrl = (network: Network) => {
       return BASE_RPC_URL;
     case Network.BaseGoerli:
       return BASE_GOERLI_RPC_URL;
+    case Network.BaseSepolia:
+      return BASE_SEPOLIA_RPC_URL;
     case Network.Scroll:
       return SCROLL_RPC_URL;
     case Network.ScrollSepolia:
@@ -346,10 +240,10 @@ export const getRpcUrl = (network: Network) => {
 
 export async function calculateFee(options: {
   network: Network;
-  fee: BigNumber;
+  fee: bigint;
   feeToken: string;
   customRpcUrl?: string;
-}): Promise<BigNumberish> {
+}): Promise<ethers.BigNumberish> {
   const { customRpcUrl, fee, feeToken, network } = options;
 
   console.log("[Teva Paymaster] Gas fee in ETH: %s", fee.toString());
@@ -386,13 +280,12 @@ export async function calculateFee(options: {
     );
 
     const additionalDecimals = 18 - decimals;
-    const exponent = BigNumber.from(10).pow(additionalDecimals);
-    const priceInToken = fee
-      .mul(ethPriceInUSD)
-      .div(tokenPricesInUSD.mul(exponent));
-    const buffer = priceInToken.mul(PRICE_BUFFER_BPS).div("10000");
+    const exponent = BigInt(10) ** BigInt(additionalDecimals);
+    const priceInToken =
+      ((fee * BigInt(ethPriceInUSD)) / BigInt(tokenPricesInUSD)) * exponent;
+    const buffer = (priceInToken * BigInt(PRICE_BUFFER_BPS)) / BigInt("10000");
 
-    return priceInToken.add(buffer);
+    return priceInToken + buffer;
   } catch (error) {
     console.error(
       "Error occured while calculating the fee with fee token: " + feeToken
@@ -408,7 +301,7 @@ export async function getPaymasterCustomOverrides(options: {
   feeToken?: string;
   isGaslessFlow?: boolean;
   contract?: zksync.Contract;
-  gasLimit?: BigNumberish;
+  gasLimit?: bigint;
 }): Promise<any> {
   const { contract, feeToken, gasLimit, isGaslessFlow, network } = options;
   let { overrides = {} } = options;
@@ -437,11 +330,12 @@ export async function getPaymasterCustomOverrides(options: {
       let fee;
       // add gas limit if provided explicitly
       if (contract && gasLimit) {
-        const gasPrice = await contract.provider.getGasPrice();
+        const provider = await getRpcProvider(network);
+        const gasPrice = await (provider as zksync.Provider).getGasPrice();
         // calculate fee in given token
         fee = await calculateFee({
           network,
-          fee: gasPrice.mul(gasLimit.toString()),
+          fee: BigInt(gasPrice) * gasLimit,
           feeToken
         });
 
@@ -455,7 +349,7 @@ export async function getPaymasterCustomOverrides(options: {
           type: "ApprovalBased",
           token: feeToken,
           // set minimalAllowance as we defined in the paymaster contract
-          minimalAllowance: ethers.BigNumber.from(fee || 1),
+          minimalAllowance: BigInt(1),
           // empty bytes as testnet paymaster does not use innerInput
           innerInput: new Uint8Array()
         }

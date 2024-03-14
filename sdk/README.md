@@ -28,7 +28,7 @@ import { types } from "@tevaeralabs/tevaera-web3";
 
 // create the instance of citizen id contract
 const citizenIdContract = new CitizenId({
-  network: types.Network.Goerli,
+  network: types.Network.Sepolia,
   privateKey: "<wallet_private_key>",
 });
 ```
