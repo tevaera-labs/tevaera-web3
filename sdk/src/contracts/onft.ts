@@ -16,7 +16,7 @@ import {
   getPaymasterCustomOverrides,
   getRpcProvider
 } from "../utils";
-import { Network, SupportedContract } from "../types";
+import { Network, SupportedContract, Token } from "../types";
 import { WalletFactory } from "../factories/WalletFactory";
 
 export class ONFT {
@@ -158,7 +158,7 @@ export class ONFT {
     tokenId: bigint,
     refundAddress: string,
     fee: string,
-    feeToken?: string,
+    feeToken?: Token,
     isGaslessFlow?: boolean,
     minGas?: string
   ): Promise<unknown> {

@@ -5,7 +5,7 @@ import {
   getPaymasterCustomOverrides,
   getRpcProvider
 } from "../utils";
-import { Network, SupportedContract } from "../types";
+import { Network, SupportedContract, Token } from "../types";
 import { WalletFactory } from "../factories/WalletFactory";
 import { ContractRunner } from "ethers";
 
@@ -57,7 +57,7 @@ export class Multicall {
     targets: string[],
     callDatas: string[],
     values: bigint[],
-    feeToken?: string,
+    feeToken?: Token,
     isGaslessFlow?: boolean
   ): Promise<void> {
     let totalValue = BigInt("0");

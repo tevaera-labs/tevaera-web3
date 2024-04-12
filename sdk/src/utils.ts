@@ -1,7 +1,7 @@
 import * as zksync from "zksync-ethers";
 import * as ethers from "ethers";
 
-import { Network, SUPPORTED_CHAIN_ID, Token } from "./types";
+import { Network, Token } from "./types";
 
 // native token
 export const NATIVE_TOKEN_ADDRESS =
@@ -29,79 +29,6 @@ export const BASE_SEPOLIA_RPC_URL = "https://sepolia.base.org";
 
 export const SCROLL_RPC_URL = "https://rpc.scroll.io";
 export const SCROLL_SEPOLIA_RPC_URL = "	https://sepolia-rpc.scroll.io";
-
-export const TOKENS: Record<SUPPORTED_CHAIN_ID, Token[]> = {
-  [Network.ZksyncEra]: [
-    {
-      address: "0x5aea5775959fbc2557cc8789bc1bf90a239d9a91",
-      name: "Wrapped ETH",
-      symbol: "WETH",
-      decimals: 18
-    },
-    {
-      address: "0x3355df6D4c9C3035724Fd0e3914dE96A5a83aaf4",
-      name: "USDC",
-      symbol: "USDC",
-      decimals: 6
-    },
-    {
-      address: "0xBBeB516fb02a01611cBBE0453Fe3c580D7281011",
-      name: "Wrapped BTC",
-      symbol: "WBTC",
-      decimals: 8
-    }
-  ],
-  [Network.ZksyncEraGoerli]: [
-    {
-      address: "0x20b28B1e4665FFf290650586ad76E977EAb90c5D",
-      name: "Wrapped ETH",
-      symbol: "WETH",
-      decimals: 18
-    },
-    {
-      address: "0x0faF6df7054946141266420b43783387A78d82A9",
-      name: "USDC",
-      symbol: "USDC",
-      decimals: 6
-    },
-    {
-      address: "0x0BfcE1D53451B4a8175DD94e6e029F7d8a701e9c",
-      name: "Wrapped BTC",
-      symbol: "WBTC",
-      decimals: 8
-    }
-  ],
-  [Network.ZksyncEraSepolia]: [
-    {
-      address: "0x75a08aCC65ff9A98dCa04548c789F0F245985c52",
-      name: "Wrapped ETH",
-      symbol: "WETH",
-      decimals: 18
-    }
-  ]
-};
-
-export function getToken(network: Network): Token[] {
-  return TOKENS[network as SUPPORTED_CHAIN_ID];
-}
-
-export function getTokenBySymbol(
-  network: Network,
-  symbol: string
-): Token | undefined {
-  const tokens = TOKENS[network as SUPPORTED_CHAIN_ID];
-
-  return tokens.find((x) => x.symbol === symbol);
-}
-
-export function getTokenByAddress(
-  network: Network,
-  address: string
-): Token | undefined {
-  const tokens = TOKENS[network as SUPPORTED_CHAIN_ID];
-
-  return tokens.find((x) => x.address === address);
-}
 
 // tevaera contracts
 export const getContractAddresses = (network: Network) => {
@@ -241,7 +168,7 @@ export const getRpcUrl = (network: Network) => {
 export async function calculateFee(options: {
   network: Network;
   fee: bigint;
-  feeToken: string;
+  feeToken: Token;
   customRpcUrl?: string;
 }): Promise<ethers.BigNumberish> {
   const { customRpcUrl, fee, feeToken, network } = options;
@@ -259,14 +186,13 @@ export async function calculateFee(options: {
       rpcProvider
     );
 
-    const token = getTokenByAddress(network, feeToken);
-    if (!token) {
+    if (!feeToken) {
       throw new Error(
         `Fee token (${feeToken}) is not supported for the paymaster.`
       );
     }
 
-    const { decimals } = token;
+    const { decimals } = feeToken;
     const tokenPricesInUSD = await paymaster.tokenPricesInUSD(feeToken);
 
     if (Number(tokenPricesInUSD) === 0) {
@@ -298,13 +224,14 @@ export async function calculateFee(options: {
 export async function getPaymasterCustomOverrides(options: {
   network: Network;
   overrides?: any;
-  feeToken?: string;
+  feeToken?: Token;
   isGaslessFlow?: boolean;
   contract?: zksync.Contract;
   gasLimit?: bigint;
 }): Promise<any> {
   const { contract, feeToken, gasLimit, isGaslessFlow, network } = options;
   let { overrides = {} } = options;
+  const { address } = feeToken || {};
 
   // Let the paymaster flow; don't break anything. Instead, allow the user to pay in ETH and continue.
   try {
@@ -318,18 +245,18 @@ export async function getPaymasterCustomOverrides(options: {
     let paymasterParams: zksync.types.PaymasterParams;
     // if feeToken is provided, it's approval-based paymaster flow
     if (
-      feeToken &&
+      address &&
       ![
         NATIVE_TOKEN_ADDRESS,
         zksync.utils.ETH_ADDRESS,
         zksync.utils.L2_ETH_TOKEN_ADDRESS
-      ].includes(feeToken)
+      ].includes(address)
     ) {
       console.log("[TevaPaymaster] Approval based flow");
 
       let fee;
       // add gas limit if provided explicitly
-      if (contract && gasLimit) {
+      if (contract && gasLimit && feeToken) {
         const provider = await getRpcProvider(network);
         const gasPrice = await (provider as zksync.Provider).getGasPrice();
         // calculate fee in given token
@@ -347,7 +274,7 @@ export async function getPaymasterCustomOverrides(options: {
         tevaPayMasterContractAddress,
         {
           type: "ApprovalBased",
-          token: feeToken,
+          token: address,
           // set minimalAllowance as we defined in the paymaster contract
           minimalAllowance: BigInt(1),
           // empty bytes as testnet paymaster does not use innerInput

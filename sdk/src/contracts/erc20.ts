@@ -3,7 +3,7 @@ import { ContractRunner, formatUnits, parseUnits } from "ethers";
 
 import { ContractFactory } from "../factories/ContractFactory";
 import { getPaymasterCustomOverrides, getRpcProvider } from "../utils";
-import { Network, SupportedContract } from "../types";
+import { Network, SupportedContract, Token } from "../types";
 import { WalletFactory } from "../factories/WalletFactory";
 
 export class ERC20 {
@@ -88,7 +88,7 @@ export class ERC20 {
   async setAllowance(
     spender: string,
     value: string,
-    feeToken?: string,
+    feeToken?: Token,
     isGaslessFlow?: boolean
   ): Promise<unknown> {
     // get paymaster overrides if applicable
