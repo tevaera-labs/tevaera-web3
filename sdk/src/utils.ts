@@ -170,8 +170,9 @@ export async function calculateFee(options: {
   fee: bigint;
   feeToken: Token;
   customRpcUrl?: string;
-}): Promise<ethers.BigNumberish> {
+}): Promise<bigint> {
   const { customRpcUrl, fee, feeToken, network } = options;
+  const { address, decimals } = feeToken;
 
   console.log("[Teva Paymaster] Gas fee in ETH: %s", fee.toString());
 
@@ -186,18 +187,17 @@ export async function calculateFee(options: {
       rpcProvider
     );
 
-    if (!feeToken) {
+    if (!address) {
       throw new Error(
-        `Fee token (${feeToken}) is not supported for the paymaster.`
+        `Fee token (${address}) is not supported for the paymaster.`
       );
     }
 
-    const { decimals } = feeToken;
-    const tokenPricesInUSD = await paymaster.tokenPricesInUSD(feeToken);
+    const tokenPricesInUSD = await paymaster.tokenPricesInUSD(address);
 
     if (Number(tokenPricesInUSD) === 0) {
       throw new Error(
-        `Fee token (${feeToken}) is not supported for the paymaster.`
+        `Fee token (${address}) is not supported for the paymaster.`
       );
     }
 
@@ -214,7 +214,7 @@ export async function calculateFee(options: {
     return priceInToken + buffer;
   } catch (error) {
     console.error(
-      "Error occured while calculating the fee with fee token: " + feeToken
+      "Error occured while calculating the fee with fee token: " + address
     );
 
     throw error;
@@ -276,7 +276,7 @@ export async function getPaymasterCustomOverrides(options: {
           type: "ApprovalBased",
           token: address,
           // set minimalAllowance as we defined in the paymaster contract
-          minimalAllowance: BigInt(1),
+          minimalAllowance: BigInt(fee || 1),
           // empty bytes as testnet paymaster does not use innerInput
           innerInput: new Uint8Array()
         }
