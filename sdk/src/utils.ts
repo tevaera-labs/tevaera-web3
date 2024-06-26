@@ -259,10 +259,11 @@ export async function getPaymasterCustomOverrides(options: {
       if (contract && gasLimit && feeToken) {
         const provider = await getRpcProvider(network);
         const feeData = await (provider as zksync.Provider).getFeeData()
+        const {gasPrice} = feeData
         // calculate fee in given token
         fee = await calculateFee({
           network,
-          fee: BigInt(feeData.gasPrice as bigint) * gasLimit,
+          fee: (gasPrice as bigint) * gasLimit,
           feeToken
         });
 
