@@ -40,7 +40,7 @@ export const getContractAddresses = (network: Network) => {
         multicallContractAddress: "0xA81898C1BC737bfce6955aad572e7658f1be521e",
         sessionAccountFactoryAddress:
           "0x4ae13fC3D0FE2F87eFFac756D8f281940ffD553a",
-        tevaTrustedSignerAddress: "0x1b9eBb8F3c335dA62235Fe783cF5663979Eb7B04"
+        tevaTrustedSignerAddress: "0x1b9eBb8F3c335dA62235Fe783cF5663979Eb7B04",
       };
     case Network.ZksyncEraGoerli:
       return {
@@ -49,7 +49,7 @@ export const getContractAddresses = (network: Network) => {
         multicallContractAddress: "0xDC3FBA29a533c484069d12E4e6061A7C9f41d841",
         sessionAccountFactoryAddress:
           "0x952A4FE79fF363ABd1752DF98D3720363DD665b8",
-        tevaTrustedSignerAddress: "0x9910FB35F401eFa865852b53285e678E21753e5e"
+        tevaTrustedSignerAddress: "0x9910FB35F401eFa865852b53285e678E21753e5e",
       };
     case Network.ZksyncEraSepolia:
       return {
@@ -58,7 +58,7 @@ export const getContractAddresses = (network: Network) => {
         multicallContractAddress: "0x68172f20b3ec8305C4474BCBa1f9b7Bff461dFA8",
         sessionAccountFactoryAddress:
           "0xBee8e2e60c46E0db2Fe8cD222A8517C19fC59240",
-        tevaTrustedSignerAddress: "0x9910FB35F401eFa865852b53285e678E21753e5e"
+        tevaTrustedSignerAddress: "0x9910FB35F401eFa865852b53285e678E21753e5e",
       };
 
     default:
@@ -249,7 +249,7 @@ export async function getPaymasterCustomOverrides(options: {
       ![
         NATIVE_TOKEN_ADDRESS,
         zksync.utils.ETH_ADDRESS,
-        zksync.utils.L2_ETH_TOKEN_ADDRESS
+        zksync.utils.L2_ETH_TOKEN_ADDRESS,
       ].includes(address)
     ) {
       console.log("[TevaPaymaster] Approval based flow");
@@ -258,12 +258,13 @@ export async function getPaymasterCustomOverrides(options: {
       // add gas limit if provided explicitly
       if (contract && gasLimit && feeToken) {
         const provider = await getRpcProvider(network);
-        const feeData = await (provider as zksync.Provider).getFeeData()
+        const feeData = await (provider as zksync.Provider).getFeeData();
+        const { gasPrice } = feeData;
         // calculate fee in given token
         fee = await calculateFee({
           network,
-          fee: BigInt(feeData.gasPrice as bigint) * gasLimit,
-          feeToken
+          fee: BigInt(gasPrice as bigint) * gasLimit,
+          feeToken,
         });
 
         overrides.gasLimit = gasLimit;
@@ -278,7 +279,7 @@ export async function getPaymasterCustomOverrides(options: {
           // set minimalAllowance as we defined in the paymaster contract
           minimalAllowance: BigInt(fee || 1),
           // empty bytes as testnet paymaster does not use innerInput
-          innerInput: new Uint8Array()
+          innerInput: new Uint8Array(),
         }
       );
     } else if (isGaslessFlow) {
@@ -288,7 +289,7 @@ export async function getPaymasterCustomOverrides(options: {
         tevaPayMasterContractAddress,
         {
           type: "General",
-          innerInput: new Uint8Array()
+          innerInput: new Uint8Array(),
         }
       );
     } else {
@@ -297,12 +298,12 @@ export async function getPaymasterCustomOverrides(options: {
 
     const customData = {
       paymasterParams,
-      gasPerPubdata: zksync.utils.DEFAULT_GAS_PER_PUBDATA_LIMIT
+      gasPerPubdata: zksync.utils.DEFAULT_GAS_PER_PUBDATA_LIMIT,
     };
 
     return {
       ...overrides,
-      customData
+      customData,
     };
   } catch (error) {
     console.error(
