@@ -1,5 +1,5 @@
 {
-  "abi": [
+  "abi":[
     {
       "anonymous": false,
       "inputs": [
@@ -250,6 +250,19 @@
     },
     {
       "inputs": [],
+      "name": "priceBufferBps",
+      "outputs": [
+        {
+          "internalType": "uint16",
+          "name": "",
+          "type": "uint16"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
       "name": "renounceOwnership",
       "outputs": [],
       "stateMutability": "nonpayable",
@@ -295,7 +308,7 @@
           "type": "address"
         }
       ],
-      "name": "tokenPricesInUSD",
+      "name": "tokenPricesInMicroUSD",
       "outputs": [
         {
           "internalType": "uint64",
