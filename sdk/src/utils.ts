@@ -7,9 +7,6 @@ import { Network, Token } from "./types";
 export const NATIVE_TOKEN_ADDRESS =
   "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee";
 
-// Fee buffer for paymaster to be on the safer side in case gas prices slightly spike.
-export const PRICE_BUFFER_BPS = "1500"; // 15%
-
 // rpc urls
 export const ZKSYNC_ERA_RPC_URL = "https://mainnet.era.zksync.io";
 export const ZKSYNC_ERA_GOERLI_RPC_URL = "https://zksync2-testnet.zksync.dev";
@@ -54,7 +51,7 @@ export const getContractAddresses = (network: Network) => {
     case Network.ZksyncEraSepolia:
       return {
         tevaPayMasterContractAddress:
-          "0x9df772A3Ad838280BADd70652fcC0eFD60A14297",
+          "0x07dbbC5302f87BdB19AF56d630d43400c28B2186",
         multicallContractAddress: "0x68172f20b3ec8305C4474BCBa1f9b7Bff461dFA8",
         sessionAccountFactoryAddress:
           "0xBee8e2e60c46E0db2Fe8cD222A8517C19fC59240",
@@ -194,6 +191,7 @@ export async function calculateFee(options: {
     }
 
     const tokenPricesInUSD = await paymaster.tokenPricesInUSD(address);
+    const priceBufferBps = await paymaster.priceBufferBps();
 
     if (Number(tokenPricesInUSD) === 0) {
       throw new Error(
@@ -209,7 +207,7 @@ export async function calculateFee(options: {
     const exponent = BigInt(10) ** BigInt(additionalDecimals);
     const priceInToken =
       ((fee * BigInt(ethPriceInUSD)) / BigInt(tokenPricesInUSD)) * exponent;
-    const buffer = (priceInToken * BigInt(PRICE_BUFFER_BPS)) / BigInt("10000");
+    const buffer = (priceInToken * priceBufferBps) / BigInt("10000");
 
     return priceInToken + buffer;
   } catch (error) {
