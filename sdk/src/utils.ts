@@ -190,7 +190,7 @@ export async function calculateFee(options: {
       );
     }
 
-    const tokenPricesInUSD = await paymaster.tokenPricesInUSD(address);
+    const tokenPricesInUSD = await paymaster.tokenPricesInMicroUSD(address);
     const priceBufferBps = await paymaster.priceBufferBps();
 
     if (Number(tokenPricesInUSD) === 0) {
