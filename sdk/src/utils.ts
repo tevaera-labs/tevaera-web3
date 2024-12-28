@@ -190,23 +190,23 @@ export async function calculateFee(options: {
       );
     }
 
-    const tokenPricesInUSD = await paymaster.tokenPricesInMicroUSD(address);
+    const tokenPricesInMicroUSD = await paymaster.tokenPricesInMicroUSD(address);
     const priceBufferBps = await paymaster.priceBufferBps();
 
-    if (Number(tokenPricesInUSD) === 0) {
+    if (Number(tokenPricesInMicroUSD) === 0) {
       throw new Error(
         `Fee token (${address}) is not supported for the paymaster.`
       );
     }
 
-    const ethPriceInUSD = await paymaster.tokenPricesInUSD(
+    const ethPriceInMicroUSD = await paymaster.tokenPricesInMicroUSD(
       NATIVE_TOKEN_ADDRESS
     );
 
     const additionalDecimals = 18 - decimals;
     const exponent = BigInt(10) ** BigInt(additionalDecimals);
     const priceInToken =
-      ((fee * BigInt(ethPriceInUSD)) / BigInt(tokenPricesInUSD)) * exponent;
+      ((fee * BigInt(ethPriceInMicroUSD)) / BigInt(tokenPricesInMicroUSD)) * exponent;
     const buffer = (priceInToken * priceBufferBps) / BigInt("10000");
 
     return priceInToken + buffer;
